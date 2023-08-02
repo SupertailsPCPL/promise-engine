@@ -16,9 +16,6 @@ router.get("/getEdd", async (req, res, next) => {
     console.log(cpin,skus,qty);
 
     let funcRes = await EddFunctions.EddMain(cpin,skus,qty);
-
-
-   
     return res.status(200).json({
       message: "getEdd successfully returned",
       response:cpin
