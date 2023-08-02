@@ -3,51 +3,10 @@ const getSBD = require('../Bufferdays/sbd');
 const getDBD = require('../Bufferdays/dbd');
 //const getGBD = require('../Bufferdays/gbd')
 const getcPinData = require('../Cpindata/cpindata')
+const utils = require("../Util/utils")
 
 module.exports = otherEDD;
 
-const imageLinks = [
-    "https://cdn.shopify.com/s/files/1/0565/8021/0861/files/Express_Delivery.png?v=1673120411",
-    "https://cdn.shopify.com/s/files/1/0565/8021/0861/files/1Day_Delivery.png?v=1673120411",
-    "https://cdn.shopify.com/s/files/1/0565/8021/0861/files/2Day_Delivery.png?v=1673120411",
-    "https://cdn.shopify.com/s/files/1/0565/8021/0861/files/Standard_Delivery.png?v=1673120411"
-]
-
-const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-
-function getImageLink(total) {
-    console.log("entered img link funcrion");
-    console.log(total);
-    if (total === 0) {
-        return imageLinks[0];
-    }
-    else if (total === 1) {
-        return imageLinks[1];
-    }
-    else if (total === 2) {
-        return imageLinks[2];
-    }
-    else {
-        return imageLinks[3];
-    }
-}
-
-function getDateFormated(date) {
-    if (date === 1) {
-        return "1st"
-    }
-    else if (date === 2) {
-        return "2nd"
-    }
-    else if (date === 3) {
-        return "3rd"
-    }
-    else if (date >= 4) {
-        return `${date}th`
-    }
-}
 
 async function getCourier(cpin, wareHouseId, skuWt) {
     // console.log(`SELECT * FROM courierV2 WHERE rpin = ${rPin} AND WH = '${wareHouseId}' AND minWt <= ${skuWt} AND maxWt >= ${skuWt} order by EDD;`,);
@@ -244,7 +203,7 @@ const wareHousePriorityData = await getWareHousePriority(userState);
     }
     date = currentDate.getDate();
     currentDate.setDate(date + total);
-    eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "courier": "others", "imageLike": `${getImageLink(total)}` };
+    eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "courier": "others", "imageLike": `${utils.getImageLink(total)}` };
     console.log('yayyyy done');
     console.log(eddResponse);
     return eddResponse

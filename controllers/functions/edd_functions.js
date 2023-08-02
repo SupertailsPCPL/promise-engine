@@ -71,7 +71,7 @@ async function getEdd(cpin,skuId,qty){
             }
             else {
                     return ({
-                        "skuid": skuid,
+                        "skuid": skuId,
                         "responseCode": "402",
                         "errorDiscription": "Product Not Found",
                         "error": "SkuId not Found"
