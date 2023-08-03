@@ -5,7 +5,7 @@ const Shipsy = require('./shipsy/shipsy.js')
 module.exports = { EddMain,getEdd }
 
 //Sample data
-EddMain(795150, "CBONA0021SA,", 3);
+EddMain(560077, "CBONA0021SA,CBONA0020SA,CBONA0019SA",3);
 
 //this is the start point of edd - Main Function
 async function EddMain(cpin,skus,qty){
@@ -28,12 +28,12 @@ async function EddMain(cpin,skus,qty){
         }
        
         let skuArray = skus.split(',');
-        console.log(skuArray);
+        
 
         const value = await Promise.all(skuArray.map(
             skuId => getEdd(cpin, skuId, qty),
         )).then((values) => {
-            console.log(values)
+            
             return (values);
         });
        
@@ -55,18 +55,22 @@ async function EddMain(cpin,skus,qty){
 async function getEdd(cpin,skuId,qty){
     return new Promise(async (resolve, reject) => {
         try{
-        console.log(cpin,skuId,qty);
+        
         let eddResponse;
         eddResponse={...eddResponse,"cpin":cpin,"skuId":skuId,"qty":qty};
-        console.log(eddResponse);
+        
         let inventoryDetails =  await GetInventory(eddResponse.skuId);
-        console.log(inventoryDetails);
+            
+            console.log("aksskakskaa");
+            console.log(inventoryDetails.weight);
+
         if(inventoryDetails){
             eddResponse = {
                     ...eddResponse,
-                    ...inventoryDetails
+                    ...inventoryDetails,
+                    "skuWt":qty * inventoryDetails.weight
                 };
-                console.log(eddResponse);
+                
             }
             else {
                     return ({
@@ -77,15 +81,16 @@ async function getEdd(cpin,skuId,qty){
                     });
                 }
                 let shipsy = await Shipsy.getIsAvailableInShipcity(cpin);
-                console.log(shipsy);
+                
                 if (shipsy!==false) {
                     console.log("going with shipsy ");
                     const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);
+                    console.log(b);
                     resolve(b);
                     }
                     else {
                         console.log("going with other courier ");
-                        const b = await otherEDD(cpin, eddResponse);
+                        const b = await otherEDD.otherEDD(cpin, eddResponse);
                         resolve(b);
                     }
         }catch(e){

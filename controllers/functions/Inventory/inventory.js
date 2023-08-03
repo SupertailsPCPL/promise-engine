@@ -14,11 +14,8 @@ async function GetInventory(skuId) {
                     if (error) { console.error(error); }
                     console.log('Inventory_rsponse');
                     if (EDD_Inventory_Sample) {
-                        // console.log('9-T9-SBDresults Found');
-                        console.log(EDD_Inventory_Sample);
                         resolve(JSON.parse(JSON.stringify(EDD_Inventory_Sample))[0]);
                     } else {
-                        // console.log('-9-T9-SBDresults Not Found');
                         resolve(false);
                     }
                 });

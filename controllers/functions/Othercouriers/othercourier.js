@@ -5,7 +5,7 @@ const getDBD = require('../Bufferdays/dbd');
 const getcPinData = require('../Cpindata/cpindata')
 const utils = require("../Util/utils")
 
-module.exports = otherEDD;
+module.exports = {otherEDD, getCourier};
 
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -15,11 +15,12 @@ async function getCourier(cpin, wareHouseId, skuWt) {
     let promise = new Promise((resolve, reject) => {
         try {
             promiseEngineConnection.query(
-                `SELECT * FROM courierV2 WHERE rpin = ${cpin} AND WH = '${wareHouseId}' AND minWt <= ${skuWt} AND maxWt > ${skuWt} order by EDD;`,
+                `SELECT * FROM courierV2 WHERE rpin = ${cpin} AND WH = '${wareHouseId}' AND minWt <= ${skuWt/1000} AND maxWt > ${skuWt/1000} order by EDD;`,
                 async function (error, courierresults, fields) {
                     if (error) { console.error(error); }
                     if (courierresults) {
-                        // console.log('8-T6 courier');
+                        // console.log('8-T6666 courier');
+                        // console.log(courierresults[0]);
                         resolve(JSON.parse(JSON.stringify(courierresults))[0]);
                     } else {
                         // console.log('-8-T6-courier Not Found');
@@ -67,7 +68,6 @@ async function getWareHousePriority(state) {
 
 
 async function otherEDD(cpin, eddResponse) {
-    console.log(eddResponse);
     var state = "";
     var city = "";
     let EDD = 0;
@@ -75,8 +75,8 @@ async function otherEDD(cpin, eddResponse) {
     let DBD = 0;
     let userState = '';
     let GBD = 0;
-    let skuWt = eddResponse.weight * eddResponse.qty;
-
+    let skuWt = eddResponse.skuWt;
+    // eddResponse.skuWt = skuWt;
     DBD = await getDBD(cpin);
     eddResponse = { ...eddResponse, "DBD":`${DBD}`};
     var cpinData = await getcPinData(cpin);
@@ -92,8 +92,7 @@ async function otherEDD(cpin, eddResponse) {
     state = cpinData.stateFullName;
     city = cpinData.city;
     eddResponse = { ...eddResponse, "state": `${state.toUpperCase()}`, "city": `${city.toUpperCase()}`, "GBD": `${GBD}` };
-    console.log("eddResponse post dbd gbd and cpin data");
-    console.log(eddResponse);   
+    console.log("eddResponse post dbd gbd and cpin data"); 
    
 // if(await getIsAvailableInNDD(cpin) === eddResponse.warehouse){
 //     EDD = 1;
@@ -141,9 +140,8 @@ async function otherEDD(cpin, eddResponse) {
 //     console.log(eddResponse);
 //     return eddResponse
 // }
-
+console.log("hghgghhgghg");
 const wareHousePriorityData = await getWareHousePriority(userState);
-    console.log(wareHousePriorityData);
     if (wareHousePriorityData == false) {
         return ({
             "skuId": eddResponse.skuid,
@@ -152,10 +150,40 @@ const wareHousePriorityData = await getWareHousePriority(userState);
             "error": "No WareHouse Priority Found For this CPin"
         })
     }
+    console.log("testingg")
     var wareHousep1 = wareHousePriorityData.WHP1;
     var wareHousep2 = wareHousePriorityData.WHP2;
     var wareHousep3 = wareHousePriorityData.WHP3;
-    whareHouseId = wareHousep1;
+
+    let eddqty = eddResponse.qty;
+    if(eddqty <= eddResponse[`${wareHousep1}`]){
+        whareHouseId = wareHousep1;
+    }
+    else{
+        eddqty = eddqty - parseInt(eddResponse[`${wareHousep1}`])
+        if(eddqty <= eddResponse[`${wareHousep2}`]){
+            whareHouseId = wareHousep2;
+        }
+        else{
+            eddqty = eddqty - parseInt(eddResponse[`${wareHousep2}`])
+            if(eddqty <= eddResponse[`${wareHousep3}`]){
+                whareHouseId = wareHousep3;
+            }
+            else{
+                return ({
+                    "skuId": eddResponse.skuid,
+                    "responseCode": "403",
+                    "errorDiscription": "Out oF Stock",
+                    "error": "Out oF Stock"
+                })
+            }
+        }
+    }
+    eddResponse.warehouse = whareHouseId;
+
+
+
+    
 
     SBD = await getSBD(whareHouseId);
     eddResponse = { ...eddResponse, "SBD": `${SBD}`};
@@ -178,7 +206,6 @@ const wareHousePriorityData = await getWareHousePriority(userState);
 
     var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD) ;
     console.log("total");
-    console.log(total);
 
     var currentDate = new Date();
     currentDate.setHours(currentDate.getHours() + 5);
@@ -195,7 +222,6 @@ const wareHousePriorityData = await getWareHousePriority(userState);
 
     eddResponse = { ...eddResponse, "currentDate": `${currentDate}`, "cutoff": `${cutoff}`, "timeLeftInMinutes": `${timeLeftToCuttOff}` };
     console.log("eddResponse post all time events");
-    console.log(eddResponse);
 
     if (cutoff > currentDate) {
         total = total;
@@ -206,7 +232,8 @@ const wareHousePriorityData = await getWareHousePriority(userState);
     date = currentDate.getDate();
     currentDate.setDate(date + total);
     eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "courier": "others", "imageLike": `${utils.getImageLink(total)}` };
-    console.log('yayyyy done');
+    console.log('yayyyy done other');
     console.log(eddResponse);
+ 
     return eddResponse
 }

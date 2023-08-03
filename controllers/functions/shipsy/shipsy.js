@@ -23,7 +23,6 @@ async function getIsAvailableInShipcity(cPin) {
                     console.log('ShipsyCity');
                     if (shipsyCityResults.length) {
                         console.log('ShipsyCity Found');
-                        console.log(shipsyCityResults);
                         resolve(JSON.parse(JSON.stringify(shipsyCityResults))[0]);
                     } else {
                         console.log('ShipsyCity Not Found');
@@ -63,7 +62,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     city = cpinData.city;
     eddResponse = { ...eddResponse, "state": `${state.toUpperCase()}`, "city": `${city.toUpperCase()}`, "DBD": `${DBD}`, "GBD": `${GBD}` };
     console.log("eddResponse post dbd gbd and cpin data");
-    console.log(eddResponse);
+    
     if (shipsy == "Delhi") {
         whareHouseId = "WN-MDEL0002";
     }
@@ -76,7 +75,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     SBD = await getSBD(whareHouseId);
     eddResponse = { ...eddResponse, "SBD": `${SBD}` };
     console.log("eddResponse post sbd");
-    console.log(eddResponse);
+   
 
     var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD);
 
@@ -96,7 +95,6 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
 
     eddResponse = { ...eddResponse, "currentDate": `${currentDate}`, "cutoff": `${cutoff}`, "timeLeftInMinutes": `${timeLeftToCuttOff}` };
     console.log("eddResponse post all time events");
-    console.log(eddResponse);
     if (cutoff > currentDate) {
         total = total;
     }
@@ -107,6 +105,5 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     currentDate.setDate(date + total);
     eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "FLEDD": 0, "LLEDD": 0, "courier": "shipsy", "imageLike": `${utils.getImageLink(total)}` };
     console.log('yayyyy done');
-    console.log(eddResponse);
     return eddResponse
 }

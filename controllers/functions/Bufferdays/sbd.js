@@ -12,7 +12,7 @@ async function getSBD(wareHouseId) {
                     // console.log('9-T9-SBDresults');
                     if (SBDresults) {
                         // console.log('9-T9-SBDresults Found');
-                        console.log(SBDresults);
+                        
                         resolve(JSON.parse(JSON.stringify(SBDresults))[0].SBD);
                     } else {
                         // console.log('-9-T9-SBDresults Not Found');
