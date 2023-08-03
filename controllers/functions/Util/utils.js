@@ -7,10 +7,6 @@ const imageLinks = [
     "https://cdn.shopify.com/s/files/1/0565/8021/0861/files/Standard_Delivery.png?v=1673120411"
 ]
 
-const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-
 function getImageLink(total) {
     console.log("entered img link funcrion");
     console.log(total);

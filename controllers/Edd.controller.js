@@ -6,7 +6,7 @@ const EddFunctions = require("./functions/edd_functions.js");
 //METHOD: GET
 //INPUT: REQUEST
 //OUTPUT: RESPONSE
-//PATH = '/test'
+//PATH = '/getEdd'
 
 router.get("/getEdd", async (req, res, next) => {
    
@@ -19,7 +19,7 @@ router.get("/getEdd", async (req, res, next) => {
     return res.status(200).json({
       message: "getEdd successfully returned",
       response:cpin
-    });
+    }); 
   });
 
 router.get("/", (req, res, next) => {

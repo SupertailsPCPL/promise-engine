@@ -5,6 +5,10 @@ const getDBD = require('../Bufferdays/dbd');
 const getcPinData = require('../Cpindata/cpindata')
 const utils = require("../Util/utils")
 
+
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
 module.exports = {getIsAvailableInShipcity, shipsyEDD};
 
 async function getIsAvailableInShipcity(cPin) {
