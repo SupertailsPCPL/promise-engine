@@ -7,7 +7,7 @@ const connection = require('./dbpromiseEngine.js');
 const InventorySnapshot = async () => {
   try {
    let itemMasterData = await GetItemMaster();
-   console.log(itemMasterData);
+//    console.log(itemMasterData);
    let simpleItemMaster = [];
    let bundleItemMaster = [];
    for (let i = 0; i < itemMasterData.length; i++) {
@@ -19,7 +19,7 @@ const InventorySnapshot = async () => {
         }
    }
 //    console.log(simpleItemMaster);
-   console.log(simpleItemMaster[122]);
+   console.log(simpleItemMaster.length);
   } catch (error) {
     console.error('Error:', error);
   }
@@ -50,7 +50,7 @@ const InventorySnapshot = async () => {
 //   }
 // };
 
-// InventorySnapshot();
+InventorySnapshot();
 
 
 
@@ -81,7 +81,7 @@ async function GetItemMaster(orderId) {
 
 
 //get inventory from warehouseID,skuid and acessToken from uni commerce api
-UniCommerceApiinventory("WN-MBLR0001",["CFOWF0003MO","DTRJT0068JH"],"4a2767fb-1e7c-4ebc-9665-deb7754d4599")
+// UniCommerceApiinventory("WN-MBLR0001",["CFOWF0003MO","DTRJT0068JH"],"4a2767fb-1e7c-4ebc-9665-deb7754d4599")
 async function UniCommerceApiinventory(wareHouseId, skuid, accessToken) {
 
     let promise = new Promise(async (resolve, reject) => {
