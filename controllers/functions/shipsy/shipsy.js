@@ -72,6 +72,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     else if (shipsy == "Bangalore") {
         whareHouseId = "WN-MBLR0001";
     }
+    eddResponse = {...eddResponse, "warehouse": `${whareHouseId}`}
     SBD = await getSBD(whareHouseId);
     eddResponse = { ...eddResponse, "SBD": `${SBD}` };
     console.log("eddResponse post sbd");
@@ -105,5 +106,8 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     currentDate.setDate(date + total);
     eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "FLEDD": 0, "LLEDD": 0, "courier": "shipsy", "imageLike": `${utils.getImageLink(total)}` };
     console.log('yayyyy done');
+    console.log(eddResponse);
+    console.log("eddresponse")
+    console.log(eddResponse)
     return eddResponse
 }

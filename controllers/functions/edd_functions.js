@@ -5,7 +5,7 @@ const Shipsy = require('./shipsy/shipsy.js')
 module.exports = { EddMain,getEdd }
 
 //Sample data
-EddMain(560077, "CBONA0021SA,CBONA0020SA,CBONA0019SA",3);
+EddMain(509106, "CTOBC0001SKDS,CBONA0021SA,CBONA0020SA",1);
 
 //this is the start point of edd - Main Function
 async function EddMain(cpin,skus,qty){
@@ -33,7 +33,6 @@ async function EddMain(cpin,skus,qty){
         const value = await Promise.all(skuArray.map(
             skuId => getEdd(cpin, skuId, qty),
         )).then((values) => {
-            
             return (values);
         });
        
@@ -55,13 +54,13 @@ async function EddMain(cpin,skus,qty){
 async function getEdd(cpin,skuId,qty){
     return new Promise(async (resolve, reject) => {
         try{
-        
         let eddResponse;
         eddResponse={...eddResponse,"cpin":cpin,"skuId":skuId,"qty":qty};
-        
+        console.log(eddResponse.skuId);
         let inventoryDetails =  await GetInventory(eddResponse.skuId);
             
             console.log("aksskakskaa");
+            console.log(inventoryDetails);
             console.log(inventoryDetails.weight);
 
         if(inventoryDetails){
@@ -91,6 +90,7 @@ async function getEdd(cpin,skuId,qty){
                     else {
                         console.log("going with other courier ");
                         const b = await otherEDD.otherEDD(cpin, eddResponse);
+                        console.log(b)
                         resolve(b);
                     }
         }catch(e){

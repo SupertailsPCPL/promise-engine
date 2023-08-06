@@ -1,7 +1,6 @@
 const router = require("express").Router();
-
-const EddFunctions = require("./functions/edd_functions.js");
-const CartEddFunctions = require("./functions/eddcart_function.js");
+const EddFunctions = require("./functions/edd_functions");
+const CartEddFunctions = require("./functions/eddcart_function");
 
 
 //METHOD: GET
@@ -19,7 +18,7 @@ router.get("/product/Edd", async (req, res, next) => {
     let funcRes = await EddFunctions.EddMain(cpin,skus,qty);
     return res.status(200).json({
       message: "getEdd successfully returned",
-      response:cpin
+      response:funcRes
     }); 
   });
 

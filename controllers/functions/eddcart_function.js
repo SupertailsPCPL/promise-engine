@@ -1,19 +1,17 @@
 const { get } = require("request");
-const GetInventory = require("../controllers/functions/Inventory/inventory.js");
-const otherEDD = require("../controllers/functions/Othercouriers/othercourier.js")
-const Shipsy = require('../controllers/functions/shipsy/shipsy.js')
-const utils = require("../controllers/functions/Util/utils.js")
+const GetInventory = require("./Inventory/inventory.js");
+const otherEDD = require("./Othercouriers/othercourier.js")
+const Shipsy = require('./shipsy/shipsy.js')
+const util = require("./Util/utils.js")
 
 module.exports = { EddMaincart,getEdd }
-
 
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-
 //Sample data
-EddMaincart(560077, "CBONA0021SA,CBONA0020SA,CBONA0019SA", "3,2,3");
-//this is the start point of edd - Main Function
+EddMaincart(509106, "CBONA0021SA,CBONA0019SA,CBONA0012SA", "2,2,1");
+//this is the start point of eddcart - Main Function
 async function EddMaincart(cpin,skus,qty){
     try{    
         if(!skus){
@@ -64,7 +62,7 @@ async function EddMaincart(cpin,skus,qty){
             console.log("before");
             
             const value = await Promise.all(skuArray.map(
-                (skuId,index) => getEdd(cpin, skuId, qtyArray[index]),)).then((values) => {
+                (skuId,index) => getEdd(cpin, skuId, qtyArray[index]))).then((values) => {
                 return (values);
             });
             console.log(value);
@@ -75,9 +73,8 @@ async function EddMaincart(cpin,skus,qty){
                 if (a.hasOwnProperty('courier')) {
                     if (a.courier === "shipsy") {
                         shipsyItems.push(a);
+                        shipsyWarehouse=a.warehouse;
                         shipsyWeight +=a.skuWt;
-                        shipsyWarehouse = a.warehouse;
-
                     }
                     else {
                         if (a.warehouse === 'WN-MBLR0001') {
@@ -95,16 +92,20 @@ async function EddMaincart(cpin,skus,qty){
                     }
                 }
                 else {
+                    console.log("courrrrr");
                     final.push(a);
                 }
             }
+            console.log(final)
             console.log('ooooooo')
             console.log(whGroup1);
             console.log(whGroup2);
             console.log(whGroup3);
             console.log(shipsyItems);
+            console.log(shipsyWeight);
+            console.log(shipsyWarehouse);
 
-            if((shipsyWeight/1000) > 20){
+            if((shipsyWeight!== 0 && shipsyWeight/1000) > 20){
                 if (shipsyWarehouse === 'WN-MBLR0001') {
                 for (let i = 0; i < shipsyItems.length; i++) {
                     const element = shipsyItems[i];
@@ -112,7 +113,6 @@ async function EddMaincart(cpin,skus,qty){
                     whGroup1.push(element);
                     whGroup1Wt += element.weight;
                    }
-
                 }
                 else if (shipsyWarehouse === 'WN-MDEL0002') {
                 for (let i = 0; i < shipsyItems.length; i++) {
@@ -134,14 +134,113 @@ async function EddMaincart(cpin,skus,qty){
             else{
                 for (let i = 0; i < shipsyItems.length; i++) {
                     let element = shipsyItems[i];
-                    element = {...element,"combinedWt":shipsyWeight}
+                    element = {...element, "combinedWt":shipsyWeight}
                     final.push(element);
                    }
             }
-            console.log("final output");
-            console.log(final);
-            return (final)
+        
+        if (whGroup1.length) {
+            console.log(whGroup1[0].cpin, whGroup1[0].warehouse, whGroup1Wt);
+            for (let i = 0; i < whGroup1.length; i++) {
+                var currentDate = new Date();
+                currentDate.setHours(currentDate.getHours() + 5);
+                currentDate.setMinutes(currentDate.getMinutes() + 30);
+                let courierData = await otherEDD.getCourier(whGroup1[i].cpin, whGroup1[i].warehouse, whGroup1Wt);
+                var daycount = parseInt(courierData.EDD)+ parseInt(whGroup1[i].SBD) + parseInt(whGroup1[i].DBD);
+                var cutoff = new Date();
+                cutoff.setDate(currentDate.getDate())
+                if(whGroup1[i].warehouse == "WN-MBHI0003" )
+                {
+                    cutoff.setHours(14);
+                }       
+                else{
+                    
+                    cutoff.setHours(15);
+                }
+                cutoff.setMinutes(0);
+                cutoff.setSeconds(0);
+                if (cutoff < currentDate) {
+                    daycount = daycount + 1;
+                }
+                whGroup1[i].dayCount = daycount;
+                whGroup1[i].combinedWt = whGroup1Wt;
+                date = currentDate.getDate();
+                currentDate.setDate(date + daycount);
+                whGroup1[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : "between 4PM - 10PM"}`;
+                whGroup1[i].deliveryDay = `${(daycount) === 0 ? "Today" : (daycount) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`;
+                final.push(whGroup1[i]);
+            }
         }
+        if (whGroup2.length) {
+            for (let i = 0; i < whGroup2.length; i++) {
+                var currentDate = new Date();
+                currentDate.setHours(currentDate.getHours() + 5);
+                currentDate.setMinutes(currentDate.getMinutes() + 30);
+                let courierData = await otherEDD.getCourier( whGroup2[i].cpin, whGroup2[i].warehouse ,whGroup2Wt);
+                whGroup2[i].FLEDD = parseInt(courierData);
+                var daycount = parseInt(courierData.EDD)+  parseInt(whGroup2[i].SBD) + parseInt(whGroup2[i].DBD);
+                
+                var cutoff = new Date();
+                cutoff.setDate(currentDate.getDate());
+                if(whGroup2[i].warehouse == "WN-MBHI0003" )
+                {
+                    cutoff.setHours(14);
+                }       
+                else{
+                    
+                    cutoff.setHours(15);
+                }
+                cutoff.setMinutes(0);
+                cutoff.setSeconds(0);
+                if (cutoff < currentDate) {
+                    daycount = daycount + 1;
+                }
+                whGroup2[i].dayCount = daycount;
+                whGroup2[i].combinedWt = whGroup2Wt;
+                date = currentDate.getDate();
+                currentDate.setDate(date + daycount);
+                whGroup2[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : "between 4PM - 10PM"}`;
+                whGroup2[i].deliveryDay = `${(daycount) === 0 ? "Today" : (daycount) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`;
+                final.push(whGroup2[i]);
+            }
+        }
+        if (whGroup3.length) {
+            for (let i = 0; i < whGroup3.length; i++) {
+                var currentDate = new Date();
+                currentDate.setHours(currentDate.getHours() + 5);
+                currentDate.setMinutes(currentDate.getMinutes() + 30);
+                let courierData = await otherEDD.getCourier( whGroup3[i].cpin, whGroup3[i].warehouse, whGroup3Wt);
+                var daycount = parseInt(courierData.EDD)+ parseInt(whGroup3[i].SBD)+ parseInt(whGroup3[i].DBD);
+                
+
+                var cutoff = new Date();
+                cutoff.setDate(currentDate.getDate());
+                if(whGroup3[i].warehouse == "WN-MBHI0003" )
+                {
+                    cutoff.setHours(14);
+                }       
+                else{
+                    
+                    cutoff.setHours(15);
+                }
+                cutoff.setMinutes(0);
+                cutoff.setSeconds(0);
+                if (cutoff < currentDate) {
+                    daycount = daycount + 1;
+                }
+                whGroup3[i].dayCount = daycount;
+                whGroup3[i].combinedWt = whGroup3Wt;
+                date = currentDate.getDate();
+                currentDate.setDate(date + daycount);
+                whGroup3[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : "between 4PM - 10PM"}`;
+                whGroup3[i].deliveryDay = `${(daycount) === 0 ? "Today" : (daycount) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`;
+                final.push(whGroup3[i]);
+            }
+        }
+        console.log("final")
+        console.log(final);
+        return (final)
+    }
     }
     catch(e){
         return ({
@@ -151,7 +250,6 @@ async function EddMaincart(cpin,skus,qty){
             "error": `"ERROR ${e}"`
         })
     }
-
 
 }
 
@@ -198,7 +296,3 @@ async function getEdd(cpin,skuId,qty){
         }
        });  
     }
-
-
-    //cart EDD
-
