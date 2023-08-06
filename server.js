@@ -9,7 +9,6 @@ const app = express();
 //CONFIGURATION FOR EVN INSTANCE
 
 //REGISTER ALL THE CONTROLLERS AND MIDDLEWARE BELOW
-const EDD  = require("./controllers/Edd.controller.js");
 
 //IMPORT AND REGISTER THE EXPRESS APPLICATION 
 //INJECT DATABASE CODE
@@ -24,11 +23,9 @@ app.use(cors({
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 
-app.use("/EDD",EDD);
-
 
 app.get('/',(req,res)=>{
-    res.send("Welcome To Promise Engine Backend")
+    res.send("Welcome To Promise Engine CronJob")
 })
 
 
