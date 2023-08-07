@@ -5,7 +5,7 @@ const Shipsy = require('./shipsy/shipsy.js')
 module.exports = { EddMain,getEdd }
 
 //Sample data
-EddMain(509106, "CTOBC0001SKDS,CBONA0021SA,CBONA0020SA",1);
+EddMain(799204, "DPCTF0004SAVPH", 1);
 
 //this is the start point of edd - Main Function
 async function EddMain(cpin,skus,qty){

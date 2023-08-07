@@ -10,7 +10,7 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 //Sample data
-EddMaincart(509106, "CBONA0021SA,CBONA0019SA,CBONA0012SA", "2,2,1");
+EddMaincart(125056, "CBONA0002DU,CBONA0003DU,CBONA0005DU", "2,2,1");
 //this is the start point of eddcart - Main Function
 async function EddMaincart(cpin,skus,qty){
     try{    
@@ -51,10 +51,12 @@ async function EddMaincart(cpin,skus,qty){
             let whGroup1 = [];
             let whGroup2 = [];
             let whGroup3 = [];
+            let whGroup4 = [];
             let final = [];
             let whGroup1Wt = 0;
             let whGroup2Wt = 0;
             let whGroup3Wt = 0;
+            let whGroup4Wt = 0;
             let shipsyWeight = 0;
             let shipsyItems = [];
             let shipsyWarehouse;
@@ -82,14 +84,19 @@ async function EddMaincart(cpin,skus,qty){
                             whGroup1.push(a);
                         }
                         else if (a.warehouse === 'WN-MDEL0002') {
-                            whGroup3Wt += a.skuWt;
-                            whGroup3.push(a);
-                        }
-                        else if (a.warehouse === 'WN-MBHI0003') {
                             whGroup2Wt += a.skuWt;
                             whGroup2.push(a);
                         }
+                        else if (a.warehouse === 'WN-MBHI0003') {
+                            whGroup3Wt += a.skuWt;
+                            whGroup3.push(a);
+                        }
+                        else if(a.warehouse === 'PWH001'){
+                            whGroup4Wt += a.skuWt;
+                            whGroup4.push(a);
+                        }
                     }
+
                 }
                 else {
                     console.log("courrrrr");
@@ -140,7 +147,6 @@ async function EddMaincart(cpin,skus,qty){
             }
         
         if (whGroup1.length) {
-            console.log(whGroup1[0].cpin, whGroup1[0].warehouse, whGroup1Wt);
             for (let i = 0; i < whGroup1.length; i++) {
                 var currentDate = new Date();
                 currentDate.setHours(currentDate.getHours() + 5);
@@ -237,6 +243,39 @@ async function EddMaincart(cpin,skus,qty){
                 final.push(whGroup3[i]);
             }
         }
+        if (whGroup4.length) {
+            for (let i = 0; i < whGroup4.length; i++) {
+                var currentDate = new Date();
+                currentDate.setHours(currentDate.getHours() + 5);
+                currentDate.setMinutes(currentDate.getMinutes() + 30);
+                let courierData = await otherEDD.getCourier( whGroup4[i].cpin, whGroup4[i].warehouse, whGroup4Wt);
+                var daycount = parseInt(courierData.EDD)+ parseInt(whGroup4[i].SBD)+ parseInt(whGroup4[i].DBD);
+                
+
+                var cutoff = new Date();
+                cutoff.setDate(currentDate.getDate());
+                if(whGroup4[i].warehouse == "PWH001" )
+                {
+                    cutoff.setHours(14);
+                }       
+                else{
+                    
+                    cutoff.setHours(15);
+                }
+                cutoff.setMinutes(0);
+                cutoff.setSeconds(0);
+                if (cutoff < currentDate) {
+                    daycount = daycount + 1;
+                }
+                whGroup4[i].dayCount = daycount;
+                whGroup4[i].combinedWt = whGroup4Wt;
+                date = currentDate.getDate();
+                currentDate.setDate(date + daycount);
+                whGroup4[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : "between 4PM - 10PM"}`;
+                whGroup4[i].deliveryDay = `${(daycount) === 0 ? "Today" : (daycount) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`;
+                final.push(whGroup4[i]);
+            }
+        }
         console.log("final")
         console.log(final);
         return (final)
@@ -252,7 +291,6 @@ async function EddMaincart(cpin,skus,qty){
     }
 
 }
-
 
 //calc edd
 async function getEdd(cpin,skuId,qty){

@@ -20,7 +20,7 @@ async function getCourier(cpin, wareHouseId, skuWt) {
                     if (error) { console.error(error); }
                     if (courierresults) {
                         // console.log('8-T6666 courier');
-                        // console.log(courierresults[0]);
+                        console.log(courierresults[0]);
                         resolve(JSON.parse(JSON.stringify(courierresults))[0]);
                     } else {
                         // console.log('-8-T6-courier Not Found');
@@ -44,7 +44,7 @@ async function getWareHousePriority(state) {
     let promise = new Promise((resolve, reject) => {
         try {
             promiseEngineConnection.query(
-                `SELECT * FROM WarehousePriority WHERE state = ?`, state,
+                `SELECT * FROM EDDwarehouse_priority1 WHERE state = ?`, state,
                 async function (error, WarehousePriorityresults, fields) {
                     if (error) { console.error(error); }
                     if (WarehousePriorityresults.length) {
@@ -82,7 +82,7 @@ async function otherEDD(cpin, eddResponse) {
     var cpinData = await getcPinData(cpin);
     if (cpinData === false) {
         return ({
-            "skuid": eddResponse.skuid,
+            "skuid": eddResponse[`${eddResponse.skuId}`],
             "responseCode": "401",
             "error": "Invalid Cpin",
             "errorDiscription": "Please enter a valid Pincode"
@@ -141,7 +141,10 @@ async function otherEDD(cpin, eddResponse) {
 //     return eddResponse
 // }
 console.log("hghgghhgghg");
+console.log("state");
+console.log(userState);
 const wareHousePriorityData = await getWareHousePriority(userState);
+console.log(wareHousePriorityData);
     if (wareHousePriorityData == false) {
         return ({
             "skuId": eddResponse.skuid,
@@ -150,45 +153,53 @@ const wareHousePriorityData = await getWareHousePriority(userState);
             "error": "No WareHouse Priority Found For this CPin"
         })
     }
-    console.log("testingg")
-    var wareHousep1 = wareHousePriorityData.WHP1;
-    var wareHousep2 = wareHousePriorityData.WHP2;
-    var wareHousep3 = wareHousePriorityData.WHP3;
-
+    console.log("testing");
+    const warehousePriorities = [
+        "WHP1", "WHP2", "WHP3", "WHP4", "WHP5", "WHP6"
+    ];
     let eddqty = eddResponse.qty;
-    if(eddqty <= eddResponse[`${wareHousep1}`]){
-        whareHouseId = wareHousep1;
-    }
-    else{
-        eddqty = eddqty - parseInt(eddResponse[`${wareHousep1}`])
-        if(eddqty <= eddResponse[`${wareHousep2}`]){
-            whareHouseId = wareHousep2;
-        }
-        else{
-            eddqty = eddqty - parseInt(eddResponse[`${wareHousep2}`])
-            if(eddqty <= eddResponse[`${wareHousep3}`]){
-                whareHouseId = wareHousep3;
-            }
-            else{
-                return ({
-                    "skuId": eddResponse.skuid,
-                    "responseCode": "403",
-                    "errorDiscription": "Out oF Stock",
-                    "error": "Out oF Stock"
-                })
-            }
-        }
-    }
-    eddResponse.warehouse = whareHouseId;
-
-
-
+    console.log(eddResponse);
+    console.log(eddqty);
+    let whareHouseId;
     
+    for (const warehousePriority of warehousePriorities) {
+        let warehouseId = wareHousePriorityData[`${warehousePriority}`];
+        console.log(warehouseId);
+
+        // // console.log(eddResponse[`${warehouseId}`])
+        if (eddResponse[`${warehouseId}`] === null || eddResponse[`${warehouseId}`] === 0) {
+            continue; // Skip to the next warehouse if warehouseId is empty or null
+        }
+        else if (eddqty <= eddResponse[`${warehouseId}`]) {
+            console.log("AHHHH");
+            whareHouseId = warehouseId;  
+        } else {
+            console.log("AAAAAAAAAA");
+            eddqty = eddqty -  parseInt(eddResponse[`${warehouseId}`]) ;
+        }
+    }
+    if (whareHouseId !== null) {
+        console.log("Final whareHouseId");
+            console.log(whareHouseId);
+            eddResponse.warehouse = whareHouseId;
+    } else {
+        return ({
+            "skuId": eddResponse.skuId,
+            "responseCode": "403",
+            "errorDiscription": "Out of Stock",
+            "error": "Out of Stock"
+        });
+    }
+    console.log("Final Warehouse");
+    console.log(eddResponse.warehouse);
 
     SBD = await getSBD(whareHouseId);
     eddResponse = { ...eddResponse, "SBD": `${SBD}`};
 
     const courierData = await getCourier(cpin, whareHouseId, skuWt);
+    console.log("courierData");
+    console.log(courierData);
+
     if (courierData == false) {
         return ({
             "skuId": eddResponse.skuid,

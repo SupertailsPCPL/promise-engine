@@ -8,8 +8,8 @@ module.exports = GetInventory;
 async function GetInventory(skuId) {
     let promise = new Promise((resolve, reject) => {
         try {
-            analyticsConnecttion.query(
-                `SELECT * FROM analytics.EDD_Inventory_Sample inner join analytics.itemMaster on  EDD_Inventory_Sample.SKU = itemMaster.skuCode AND SKU = ?`, skuId,
+            promiseEngineConnection.query(
+                `SELECT * FROM promiseEngine.EDDItemMaster inner join EdditemInventory on EDDItemMaster.skuId = EdditemInventory.skuCode AND skuId = ?`, skuId,
                 async function (error, EDD_Inventory_Sample, fields) {
                     if (error) { console.error(error); }
                     console.log('Inventory_rsponse');
