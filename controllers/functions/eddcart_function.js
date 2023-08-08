@@ -4,17 +4,17 @@ const otherEDD = require("./Othercouriers/othercourier.js")
 const Shipsy = require('./shipsy/shipsy.js')
 const util = require("./Util/utils.js")
 
-module.exports = { EddMaincart,getEdd }
+module.exports = { EddMaincart, getEdd }
 
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 //Sample data
-EddMaincart(125056, "CBONA0002DU,CBONA0003DU,CBONA0005DU", "2,2,1");
+//EddMaincart(560037, "CBONA0005DU,CCOCO0017TR,CCOCO0022TR", "1,3,2");
 //this is the start point of eddcart - Main Function
-async function EddMaincart(cpin,skus,qty){
-    try{    
-        if(!skus){
+async function EddMaincart(cpin, skus, qty) {
+    try {
+        if (!skus) {
             return ({
                 "skuId": "No-Sku-Given",
                 "responseCode": "402",
@@ -22,266 +22,143 @@ async function EddMaincart(cpin,skus,qty){
                 "errorDiscription": "SERVER ERROR"
             })
         }
-        if(!cpin){
+        if (!cpin) {
             return ({
-                "sku":skus,
+                "sku": skus,
                 "responseCode": "401",
                 "errorDiscription": "Pincode field cannot be blank",
                 "error": "Enter a Cpin"
             })
         }
-       
+
         let skuArray = skus.split(',');
         console.log("skuArray");
         console.log(skuArray);
 
         let qtyArray = qty.split(',');
         console.log(qtyArray);
-        
 
-        if(skuArray.length !== qtyArray.length){
+
+        if (skuArray.length !== qtyArray.length) {
             return ({
                 "skuId": "Error",
                 "responseCode": "407",
                 "errorDiscription": "SERVER ERROR",
                 "error": "Number of skus and qty does not match"
             })
-        }else{
-            
-            let whGroup1 = [];
-            let whGroup2 = [];
-            let whGroup3 = [];
-            let whGroup4 = [];
+        } else {
             let final = [];
-            let whGroup1Wt = 0;
-            let whGroup2Wt = 0;
-            let whGroup3Wt = 0;
-            let whGroup4Wt = 0;
             let shipsyWeight = 0;
             let shipsyItems = [];
             let shipsyWarehouse;
+            let whGroups = {
+                'WN-MBLR0001': { group: [], wt: 0 },
+                'WN-MDEL0002': { group: [], wt: 0 },
+                'WN-MBHI0003': { group: [], wt: 0 },
+                'PWH001': { group: [], wt: 0 },
+                'WH004': { group: [], wt: 0 },
+                'WH005': { group: [], wt: 0 }
+            };
 
             console.log("before");
-            
+
             const value = await Promise.all(skuArray.map(
-                (skuId,index) => getEdd(cpin, skuId, qtyArray[index]))).then((values) => {
-                return (values);
-            });
+                (skuId, index) => getEdd(cpin, skuId, qtyArray[index]))).then((values) => {
+                    return (values);
+                });
+
             console.log(value);
             console.log("loggggggggggggggggg");
+
             for (let i = 0; i < value.length; i++) {
-                a = value[i];
+                const a = value[i];
                 console.log(a);
+
                 if (a.hasOwnProperty('courier')) {
                     if (a.courier === "shipsy") {
                         shipsyItems.push(a);
-                        shipsyWarehouse=a.warehouse;
-                        shipsyWeight +=a.skuWt;
-                    }
-                    else {
-                        if (a.warehouse === 'WN-MBLR0001') {
-                            whGroup1Wt += a.skuWt;
-                            whGroup1.push(a);
-                        }
-                        else if (a.warehouse === 'WN-MDEL0002') {
-                            whGroup2Wt += a.skuWt;
-                            whGroup2.push(a);
-                        }
-                        else if (a.warehouse === 'WN-MBHI0003') {
-                            whGroup3Wt += a.skuWt;
-                            whGroup3.push(a);
-                        }
-                        else if(a.warehouse === 'PWH001'){
-                            whGroup4Wt += a.skuWt;
-                            whGroup4.push(a);
+                        shipsyWarehouse = a.warehouse;
+                        shipsyWeight += a.skuWt;
+                    } else {
+                        const warehouseInfo = whGroups[a.warehouse];
+                        if (warehouseInfo) {
+                            warehouseInfo.group.push(a);
+                            warehouseInfo.wt += a.skuWt;
+                        } else {
+                            console.log("Invalid warehouse:", a.warehouse);
                         }
                     }
-
-                }
-                else {
+                } else {
                     console.log("courrrrr");
                     final.push(a);
                 }
             }
-            console.log(final)
-            console.log('ooooooo')
-            console.log(whGroup1);
-            console.log(whGroup2);
-            console.log(whGroup3);
-            console.log(shipsyItems);
-            console.log(shipsyWeight);
-            console.log(shipsyWarehouse);
 
-            if((shipsyWeight!== 0 && shipsyWeight/1000) > 20){
-                if (shipsyWarehouse === 'WN-MBLR0001') {
+            console.log(final);
+            console.log('ooooooo');
+            console.log(whGroups);
+
+            if ((shipsyWeight !== 0 && shipsyWeight / 1000) > 20) {
+                const group = whGroups[shipsyWarehouse].group;
+                const wtKey = whGroups[shipsyWarehouse].wt;
+
                 for (let i = 0; i < shipsyItems.length; i++) {
                     const element = shipsyItems[i];
                     element.courier = "others";
-                    whGroup1.push(element);
-                    whGroup1Wt += element.weight;
-                   }
+                    group.push(element);
+                    wtKey += element.weight;
                 }
-                else if (shipsyWarehouse === 'WN-MDEL0002') {
+            } else {
                 for (let i = 0; i < shipsyItems.length; i++) {
                     const element = shipsyItems[i];
-                    element.courier = "others";
-                    whGroup2.push(element);
-                    whGroup2Wt += element.weight;
-                   }
-                }
-                else if (shipsyWarehouse === 'WN-MBHI0003') {
-                for (let i = 0; i < shipsyItems.length; i++) {
-                    const element = shipsyItems[i];
-                    element.courier = "others";
-                    whGroup3.push(element);
-                    whGroup3Wt += element.weight;
-                   }
-                }
-            }
-            else{
-                for (let i = 0; i < shipsyItems.length; i++) {
-                    let element = shipsyItems[i];
-                    element = {...element, "combinedWt":shipsyWeight}
+                    element.combinedWt = shipsyWeight;
                     final.push(element);
-                   }
+                }
             }
-        
-        if (whGroup1.length) {
-            for (let i = 0; i < whGroup1.length; i++) {
-                var currentDate = new Date();
-                currentDate.setHours(currentDate.getHours() + 5);
-                currentDate.setMinutes(currentDate.getMinutes() + 30);
-                let courierData = await otherEDD.getCourier(whGroup1[i].cpin, whGroup1[i].warehouse, whGroup1Wt);
-                var daycount = parseInt(courierData.EDD)+ parseInt(whGroup1[i].SBD) + parseInt(whGroup1[i].DBD);
-                var cutoff = new Date();
-                cutoff.setDate(currentDate.getDate())
-                if(whGroup1[i].warehouse == "WN-MBHI0003" )
-                {
-                    cutoff.setHours(14);
-                }       
-                else{
-                    
-                    cutoff.setHours(15);
-                }
-                cutoff.setMinutes(0);
-                cutoff.setSeconds(0);
-                if (cutoff < currentDate) {
-                    daycount = daycount + 1;
-                }
-                whGroup1[i].dayCount = daycount;
-                whGroup1[i].combinedWt = whGroup1Wt;
-                date = currentDate.getDate();
-                currentDate.setDate(date + daycount);
-                whGroup1[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : "between 4PM - 10PM"}`;
-                whGroup1[i].deliveryDay = `${(daycount) === 0 ? "Today" : (daycount) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`;
-                final.push(whGroup1[i]);
-            }
-        }
-        if (whGroup2.length) {
-            for (let i = 0; i < whGroup2.length; i++) {
-                var currentDate = new Date();
-                currentDate.setHours(currentDate.getHours() + 5);
-                currentDate.setMinutes(currentDate.getMinutes() + 30);
-                let courierData = await otherEDD.getCourier( whGroup2[i].cpin, whGroup2[i].warehouse ,whGroup2Wt);
-                whGroup2[i].FLEDD = parseInt(courierData);
-                var daycount = parseInt(courierData.EDD)+  parseInt(whGroup2[i].SBD) + parseInt(whGroup2[i].DBD);
-                
-                var cutoff = new Date();
-                cutoff.setDate(currentDate.getDate());
-                if(whGroup2[i].warehouse == "WN-MBHI0003" )
-                {
-                    cutoff.setHours(14);
-                }       
-                else{
-                    
-                    cutoff.setHours(15);
-                }
-                cutoff.setMinutes(0);
-                cutoff.setSeconds(0);
-                if (cutoff < currentDate) {
-                    daycount = daycount + 1;
-                }
-                whGroup2[i].dayCount = daycount;
-                whGroup2[i].combinedWt = whGroup2Wt;
-                date = currentDate.getDate();
-                currentDate.setDate(date + daycount);
-                whGroup2[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : "between 4PM - 10PM"}`;
-                whGroup2[i].deliveryDay = `${(daycount) === 0 ? "Today" : (daycount) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`;
-                final.push(whGroup2[i]);
-            }
-        }
-        if (whGroup3.length) {
-            for (let i = 0; i < whGroup3.length; i++) {
-                var currentDate = new Date();
-                currentDate.setHours(currentDate.getHours() + 5);
-                currentDate.setMinutes(currentDate.getMinutes() + 30);
-                let courierData = await otherEDD.getCourier( whGroup3[i].cpin, whGroup3[i].warehouse, whGroup3Wt);
-                var daycount = parseInt(courierData.EDD)+ parseInt(whGroup3[i].SBD)+ parseInt(whGroup3[i].DBD);
-                
 
-                var cutoff = new Date();
-                cutoff.setDate(currentDate.getDate());
-                if(whGroup3[i].warehouse == "WN-MBHI0003" )
-                {
-                    cutoff.setHours(14);
-                }       
-                else{
-                    
-                    cutoff.setHours(15);
-                }
-                cutoff.setMinutes(0);
-                cutoff.setSeconds(0);
-                if (cutoff < currentDate) {
-                    daycount = daycount + 1;
-                }
-                whGroup3[i].dayCount = daycount;
-                whGroup3[i].combinedWt = whGroup3Wt;
-                date = currentDate.getDate();
-                currentDate.setDate(date + daycount);
-                whGroup3[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : "between 4PM - 10PM"}`;
-                whGroup3[i].deliveryDay = `${(daycount) === 0 ? "Today" : (daycount) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`;
-                final.push(whGroup3[i]);
-            }
-        }
-        if (whGroup4.length) {
-            for (let i = 0; i < whGroup4.length; i++) {
-                var currentDate = new Date();
-                currentDate.setHours(currentDate.getHours() + 5);
-                currentDate.setMinutes(currentDate.getMinutes() + 30);
-                let courierData = await otherEDD.getCourier( whGroup4[i].cpin, whGroup4[i].warehouse, whGroup4Wt);
-                var daycount = parseInt(courierData.EDD)+ parseInt(whGroup4[i].SBD)+ parseInt(whGroup4[i].DBD);
-                
+            for (const warehouseId in whGroups) {
+                const group = whGroups[warehouseId].group;
+                for (let i = 0; i < group.length; i++) {
+                    const currentDate = new Date();
+                    currentDate.setHours(currentDate.getHours() + 5);
+                    currentDate.setMinutes(currentDate.getMinutes() + 30);
 
-                var cutoff = new Date();
-                cutoff.setDate(currentDate.getDate());
-                if(whGroup4[i].warehouse == "PWH001" )
-                {
-                    cutoff.setHours(14);
-                }       
-                else{
-                    
-                    cutoff.setHours(15);
+                    const courierData = await otherEDD.getCourier(group[i].cpin, group[i].warehouse, whGroups[warehouseId].wt);
+                    let daycount = parseInt(courierData.EDD) + parseInt(group[i].SBD) + parseInt(group[i].DBD);
+
+                    const cutoff = new Date();
+                    cutoff.setDate(currentDate.getDate());
+
+                    if (group[i].warehouse === "WN-MBHI0003") {
+                        cutoff.setHours(14);
+                    } else {
+                        cutoff.setHours(15);
+                    }
+
+                    cutoff.setMinutes(0);
+                    cutoff.setSeconds(0);
+
+                    if (cutoff < currentDate) {
+                        daycount = daycount + 1;
+                    }
+
+                    group[i].dayCount = daycount;
+                    group[i].combinedWt = whGroups[warehouseId].wt;
+                    const date = currentDate.getDate();
+                    currentDate.setDate(date + daycount);
+                    group[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : "between 4PM - 10PM"}`;
+                    group[i].deliveryDay = `${(daycount) === 0 ? "Today" : (daycount) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`;
+                    final.push(group[i]);
+
                 }
-                cutoff.setMinutes(0);
-                cutoff.setSeconds(0);
-                if (cutoff < currentDate) {
-                    daycount = daycount + 1;
-                }
-                whGroup4[i].dayCount = daycount;
-                whGroup4[i].combinedWt = whGroup4Wt;
-                date = currentDate.getDate();
-                currentDate.setDate(date + daycount);
-                whGroup4[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : "between 4PM - 10PM"}`;
-                whGroup4[i].deliveryDay = `${(daycount) === 0 ? "Today" : (daycount) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`;
-                final.push(whGroup4[i]);
             }
+
+            console.log("final");
+            console.log(final);
+            return final;
         }
-        console.log("final")
-        console.log(final);
-        return (final)
     }
-    }
-    catch(e){
+    catch (e) {
         return ({
             "skuId": skus,
             "responseCode": "499",
@@ -293,44 +170,44 @@ async function EddMaincart(cpin,skus,qty){
 }
 
 //calc edd
-async function getEdd(cpin,skuId,qty){
+async function getEdd(cpin, skuId, qty) {
     return new Promise(async (resolve, reject) => {
-        try{
-        let eddResponse;
-        eddResponse={...eddResponse,"cpin":cpin,"skuId":skuId,"qty":qty};
-        let inventoryDetails =  await GetInventory(eddResponse.skuId);
-        if(inventoryDetails){
-            eddResponse = {
+        try {
+            let eddResponse;
+            eddResponse = { ...eddResponse, "cpin": cpin, "skuId": skuId, "qty": qty };
+            let inventoryDetails = await GetInventory(eddResponse.skuId);
+            if (inventoryDetails) {
+                eddResponse = {
                     ...eddResponse,
                     ...inventoryDetails,
-                    "skuWt":qty * inventoryDetails.weight
+                    "skuWt": qty * inventoryDetails.weight
                 };
 
             }
             else {
-                    return ({
-                        "skuid": skuId,
-                        "responseCode": "402",
-                        "errorDiscription": "Product Not Found",
-                        "error": "SkuId not Found"
-                    });
-                }
+                return ({
+                    "skuid": skuId,
+                    "responseCode": "402",
+                    "errorDiscription": "Product Not Found",
+                    "error": "SkuId not Found"
+                });
+            }
 
-                let shipsy = await Shipsy.getIsAvailableInShipcity(cpin);
-                
-                if (shipsy!==false) {
-                    console.log("going with shipsy ");
-                    const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);
-                    resolve(b);
-                    }
-                    else {
-                        console.log("going with other courier ");
-                        console.log(eddResponse)
-                        const b = await otherEDD.otherEDD(cpin, eddResponse);
-                        resolve(b);
-                    }
-        }catch(e){
+            let shipsy = await Shipsy.getIsAvailableInShipcity(cpin);
+
+            if (shipsy !== false) {
+                console.log("going with shipsy ");
+                const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);
+                resolve(b);
+            }
+            else {
+                console.log("going with other courier ");
+                console.log(eddResponse)
+                const b = await otherEDD.otherEDD(cpin, eddResponse);
+                resolve(b);
+            }
+        } catch (e) {
             console.log(e);
         }
-       });  
-    }
+    });
+}

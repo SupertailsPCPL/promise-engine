@@ -16,9 +16,10 @@ router.get("/product/Edd", async (req, res, next) => {
     console.log(cpin,skus,qty);
 
     let funcRes = await EddFunctions.EddMain(cpin,skus,qty);
+
     return res.status(200).json({
       message: "getEdd successfully returned",
-      response:funcRes
+      response: funcRes
     }); 
   });
 
@@ -32,7 +33,7 @@ router.get("/product/Edd", async (req, res, next) => {
     let funcRes = await CartEddFunctions.EddMaincart(cpin,skus,qty);
     return res.status(200).json({
       message: "getEdd successfully returned",
-      response:cpin
+      response: funcRes
     }); 
   });
 

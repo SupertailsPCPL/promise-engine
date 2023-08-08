@@ -1,5 +1,4 @@
 const promiseEngineConnection = require('../../../dbpromiseengine')
-const analyticsConnecttion = require('../../../dbanalytics')
 
 
 module.exports = GetInventory;

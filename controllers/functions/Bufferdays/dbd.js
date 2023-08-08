@@ -16,7 +16,6 @@ async function getDBD(cPin) {
                     }
                     if (DBDresults.length) {
                         // console.log('-1-T10-DBD Found');
-                        
                         resolve(JSON.parse(JSON.stringify(DBDresults))[0].DBD);
                     } else {
                         // console.log('-1-T10-DBD Not Found');

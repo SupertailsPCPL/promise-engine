@@ -164,24 +164,20 @@ console.log(wareHousePriorityData);
     
     for (const warehousePriority of warehousePriorities) {
         let warehouseId = wareHousePriorityData[`${warehousePriority}`];
-        console.log(warehouseId);
-
-        // // console.log(eddResponse[`${warehouseId}`])
         if (eddResponse[`${warehouseId}`] === null || eddResponse[`${warehouseId}`] === 0) {
+            console.log("going in null");
             continue; // Skip to the next warehouse if warehouseId is empty or null
         }
         else if (eddqty <= eddResponse[`${warehouseId}`]) {
-            console.log("AHHHH");
             whareHouseId = warehouseId;  
+            break;
         } else {
-            console.log("AAAAAAAAAA");
             eddqty = eddqty -  parseInt(eddResponse[`${warehouseId}`]) ;
         }
     }
     if (whareHouseId !== null) {
         console.log("Final whareHouseId");
             console.log(whareHouseId);
-            eddResponse.warehouse = whareHouseId;
     } else {
         return ({
             "skuId": eddResponse.skuId,
@@ -190,13 +186,13 @@ console.log(wareHousePriorityData);
             "error": "Out of Stock"
         });
     }
-    console.log("Final Warehouse");
+    eddResponse.warehouse = whareHouseId;
+    console.log("EDD Warehouse");
     console.log(eddResponse.warehouse);
-
-    SBD = await getSBD(whareHouseId);
+    SBD = await getSBD(eddResponse.warehouse);
     eddResponse = { ...eddResponse, "SBD": `${SBD}`};
 
-    const courierData = await getCourier(cpin, whareHouseId, skuWt);
+    const courierData = await getCourier(cpin, eddResponse.warehouse, skuWt);
     console.log("courierData");
     console.log(courierData);
 
@@ -245,6 +241,5 @@ console.log(wareHousePriorityData);
     eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "courier": "others", "imageLike": `${utils.getImageLink(total)}` };
     console.log('yayyyy done other');
     console.log(eddResponse);
- 
     return eddResponse
 }

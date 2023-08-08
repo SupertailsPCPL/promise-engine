@@ -10,9 +10,9 @@ async function getSBD(wareHouseId) {
                 async function (error, SBDresults, fields) {
                     if (error) { console.error(error); }
                     // console.log('9-T9-SBDresults');
+                    // console.log(SBDresults);
                     if (SBDresults) {
                         // console.log('9-T9-SBDresults Found');
-                        
                         resolve(JSON.parse(JSON.stringify(SBDresults))[0].SBD);
                     } else {
                         // console.log('-9-T9-SBDresults Not Found');

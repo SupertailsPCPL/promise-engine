@@ -5,7 +5,7 @@ const Shipsy = require('./shipsy/shipsy.js')
 module.exports = { EddMain,getEdd }
 
 //Sample data
-EddMain(799204, "DPCTF0004SAVPH", 1);
+//EddMain(110039, "DAPCL0540PPDS", 1);
 
 //this is the start point of edd - Main Function
 async function EddMain(cpin,skus,qty){
@@ -35,6 +35,7 @@ async function EddMain(cpin,skus,qty){
         )).then((values) => {
             return (values);
         });
+        return value;
        
     }
     catch(e){
@@ -61,7 +62,6 @@ async function getEdd(cpin,skuId,qty){
             
             console.log("aksskakskaa");
             console.log(inventoryDetails);
-            console.log(inventoryDetails.weight);
 
         if(inventoryDetails){
             eddResponse = {
@@ -84,13 +84,11 @@ async function getEdd(cpin,skuId,qty){
                 if (shipsy!==false) {
                     console.log("going with shipsy ");
                     const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);
-                    console.log(b);
                     resolve(b);
                     }
                     else {
                         console.log("going with other courier ");
                         const b = await otherEDD.otherEDD(cpin, eddResponse);
-                        console.log(b)
                         resolve(b);
                     }
         }catch(e){
