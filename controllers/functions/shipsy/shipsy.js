@@ -47,8 +47,17 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     let DBD = 0;
     let whareHouseId = "";
     let GBD = 0;
+    console.log("DBD data");
+    console.log(Date());
     DBD = await getDBD(cpin);
+    console.log("DBD data completed");
+    console.log(Date());
+
+    console.log("Cpin data");
+    console.log(Date());
     var cpinData = await getcPinData(cpin);
+    console.log("Cpin data completed");
+    console.log(Date());
     if (cpinData === false) {
         return ({
             "skuid": eddResponse.skuid,
@@ -73,7 +82,11 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
         whareHouseId = "WN-MBLR0001";
     }
     eddResponse = {...eddResponse, "warehouse": `${whareHouseId}`}
+    console.log("SBD Data");
+    console.log(Date());
     SBD = await getSBD(whareHouseId);
+    console.log("SBD Data Completed");
+    console.log(Date());
     eddResponse = { ...eddResponse, "SBD": `${SBD}` };
     console.log("eddResponse post sbd");
    
@@ -94,7 +107,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     timeLeftToCuttOff = Math.ceil(timeLeftToCuttOff / (1000 * 60));
     timeLeftToCuttOff = timeLeftToCuttOff < 0 ? 1440 - Math.abs(timeLeftToCuttOff) : timeLeftToCuttOff;
 
-    eddResponse = { ...eddResponse, "currentDate": `${currentDate}`, "cutoff": `${cutoff}`, "timeLeftInMinutes": `${timeLeftToCuttOff}` };
+    eddResponse = { ...eddResponse, "currentDate": `${currentDate}`, "cutoff": `${cutoff}`, "timeLeftInMinutes": `${timeLeftToCuttOff}`, "EDD": `${EDD}`};
     console.log("eddResponse post all time events");
     if (cutoff > currentDate) {
         total = total;

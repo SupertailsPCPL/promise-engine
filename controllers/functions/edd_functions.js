@@ -5,7 +5,7 @@ const Shipsy = require('./shipsy/shipsy.js')
 module.exports = { EddMain,getEdd }
 
 //Sample data
-//EddMain(110039, "DAPCL0540PPDS", 1);
+//EddMain(583279, "CAPAC0004TR", 1);
 
 //this is the start point of edd - Main Function
 async function EddMain(cpin,skus,qty){
@@ -58,8 +58,11 @@ async function getEdd(cpin,skuId,qty){
         let eddResponse;
         eddResponse={...eddResponse,"cpin":cpin,"skuId":skuId,"qty":qty};
         console.log(eddResponse.skuId);
+        console.log("GetInventory");
+        console.log(Date());
         let inventoryDetails =  await GetInventory(eddResponse.skuId);
-            
+        console.log("GetInventory completed");
+        console.log(Date());        
             console.log("aksskakskaa");
             console.log(inventoryDetails);
 
@@ -79,8 +82,11 @@ async function getEdd(cpin,skuId,qty){
                         "error": "SkuId not Found"
                     });
                 }
+                console.log("check for shipsy city");
+                console.log(Date());
                 let shipsy = await Shipsy.getIsAvailableInShipcity(cpin);
-                
+                console.log("check for shipsy city completed");
+                console.log(Date());
                 if (shipsy!==false) {
                     console.log("going with shipsy ");
                     const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);

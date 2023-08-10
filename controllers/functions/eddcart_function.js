@@ -30,12 +30,11 @@ async function EddMaincart(cpin, skus, qty) {
                 "error": "Enter a Cpin"
             })
         }
-
         let skuArray = skus.split(',');
         console.log("skuArray");
         console.log(skuArray);
-
-        let qtyArray = qty.split(',');
+        console.log(qty);
+        let qtyArray = qty.toString().split(',');
         console.log(qtyArray);
 
 
@@ -130,12 +129,12 @@ async function EddMaincart(cpin, skus, qty) {
                     cutoff.setDate(currentDate.getDate());
 
                     if (group[i].warehouse === "WN-MBHI0003") {
-                        cutoff.setHours(14);
+                        cutoff.setHours(8);
                     } else {
-                        cutoff.setHours(15);
+                        cutoff.setHours(9);
                     }
 
-                    cutoff.setMinutes(0);
+                    cutoff.setMinutes(30);
                     cutoff.setSeconds(0);
 
                     if (cutoff < currentDate) {
@@ -152,7 +151,6 @@ async function EddMaincart(cpin, skus, qty) {
 
                 }
             }
-
             console.log("final");
             console.log(final);
             return final;

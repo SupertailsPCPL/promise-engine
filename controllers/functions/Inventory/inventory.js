@@ -7,6 +7,7 @@ module.exports = GetInventory;
 async function GetInventory(skuId) {
     let promise = new Promise((resolve, reject) => {
         try {
+            // console.log( `SELECT * FROM promiseEngine.EDDItemMaster inner join EdditemInventory on EDDItemMaster.skuId = EdditemInventory.skuCode AND skuId = ${skuId}`);
             promiseEngineConnection.query(
                 `SELECT * FROM promiseEngine.EDDItemMaster inner join EdditemInventory on EDDItemMaster.skuId = EdditemInventory.skuCode AND skuId = ?`, skuId,
                 async function (error, EDD_Inventory_Sample, fields) {

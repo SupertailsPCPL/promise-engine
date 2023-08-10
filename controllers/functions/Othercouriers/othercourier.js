@@ -4,8 +4,9 @@ const getDBD = require('../Bufferdays/dbd');
 //const getGBD = require('../Bufferdays/gbd')
 const getcPinData = require('../Cpindata/cpindata')
 const utils = require("../Util/utils")
+const getIsAvailableInNDD = require("../NDD/ndd.js")
 
-module.exports = {otherEDD, getCourier};
+module.exports = { otherEDD, getCourier };
 
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -15,7 +16,7 @@ async function getCourier(cpin, wareHouseId, skuWt) {
     let promise = new Promise((resolve, reject) => {
         try {
             promiseEngineConnection.query(
-                `SELECT * FROM courierV2 WHERE rpin = ${cpin} AND WH = '${wareHouseId}' AND minWt <= ${skuWt/1000} AND maxWt > ${skuWt/1000} order by EDD;`,
+                `SELECT * FROM courierV2 WHERE rpin = ${cpin} AND WH = '${wareHouseId}' AND minWt <= ${skuWt / 1000} AND maxWt > ${skuWt / 1000} order by EDD;`,
                 async function (error, courierresults, fields) {
                     if (error) { console.error(error); }
                     if (courierresults) {
@@ -77,9 +78,17 @@ async function otherEDD(cpin, eddResponse) {
     let GBD = 0;
     let skuWt = eddResponse.skuWt;
     // eddResponse.skuWt = skuWt;
+    console.log("DBD data");
+    console.log(Date());
     DBD = await getDBD(cpin);
-    eddResponse = { ...eddResponse, "DBD":`${DBD}`};
+    console.log("DBD data completed");
+    console.log(Date());
+    eddResponse = { ...eddResponse, "DBD": `${DBD}` };
+    console.log("Cpin data");
+    console.log(Date());
     var cpinData = await getcPinData(cpin);
+    console.log("Cpin data completed");
+    console.log(Date());
     if (cpinData === false) {
         return ({
             "skuid": eddResponse[`${eddResponse.skuId}`],
@@ -92,59 +101,16 @@ async function otherEDD(cpin, eddResponse) {
     state = cpinData.stateFullName;
     city = cpinData.city;
     eddResponse = { ...eddResponse, "state": `${state.toUpperCase()}`, "city": `${city.toUpperCase()}`, "GBD": `${GBD}` };
-    console.log("eddResponse post dbd gbd and cpin data"); 
-   
-// if(await getIsAvailableInNDD(cpin) === eddResponse.warehouse){
-//     EDD = 1;
-//     LLEDD = 0;
-//     L1BD = 0;
-//     L2BD = 0;
-
-//     eddResponse = { ...eddResponse, "LLEDD": `0`, "L1BD": `0` , "EDD": `1`, "L2BD": `0`};
-//     SBD = await getSBD(whareHouseId);
-//     eddResponse = { ...eddResponse, "SBD": `${SBD}` };
-//     console.log("eddResponse post sbd");
-//     console.log(eddResponse);
-
-//     var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD);
-//     console.log("total");
-//     console.log(total);
-
-//     var currentDate = new Date();
-//     currentDate.setHours(currentDate.getHours() + 5);
-//     currentDate.setMinutes(currentDate.getMinutes() + 30);
-
-//     var cutoff = new Date();
-//     cutoff.setHours(14);
-//     cutoff.setMinutes(0);
-//     cutoff.setSeconds(0);
-
-//     var timeLeftToCuttOff = (cutoff.getTime() - currentDate.getTime());
-//     timeLeftToCuttOff = Math.ceil(timeLeftToCuttOff / (1000 * 60));
-//     timeLeftToCuttOff = timeLeftToCuttOff < 0 ? 1440 - Math.abs(timeLeftToCuttOff) : timeLeftToCuttOff;
-
-//     eddResponse = { ...eddResponse, "currentDate": `${currentDate}`, "cutoff": `${cutoff}`, "timeLeftInMinutes": `${timeLeftToCuttOff}` };
-//     console.log("eddResponse post all time events");
-//     console.log(eddResponse);
-
-//     if (cutoff > currentDate) {
-//         total = total;
-//     }
-//     else {
-//         total += 1;
-//     }
-//     date = currentDate.getDate();
-//     currentDate.setDate(date + total);
-//     eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "courier": "others", "imageLike": `${getImageLink(total)}` };
-//     console.log('yayyyy done');
-//     console.log(eddResponse);
-//     return eddResponse
-// }
-console.log("hghgghhgghg");
-console.log("state");
-console.log(userState);
-const wareHousePriorityData = await getWareHousePriority(userState);
-console.log(wareHousePriorityData);
+    console.log("eddResponse post dbd gbd and cpin data");
+    console.log("hghgghhgghg");
+    console.log("state");
+    console.log(userState);
+    console.log("warehouse priority");
+    console.log(Date());
+    const wareHousePriorityData = await getWareHousePriority(userState);
+    console.log("warehouse priority completed");
+    console.log(Date());
+    console.log(wareHousePriorityData);
     if (wareHousePriorityData == false) {
         return ({
             "skuId": eddResponse.skuid,
@@ -161,7 +127,7 @@ console.log(wareHousePriorityData);
     console.log(eddResponse);
     console.log(eddqty);
     let whareHouseId;
-    
+
     for (const warehousePriority of warehousePriorities) {
         let warehouseId = wareHousePriorityData[`${warehousePriority}`];
         if (eddResponse[`${warehouseId}`] === null || eddResponse[`${warehouseId}`] === 0) {
@@ -169,15 +135,15 @@ console.log(wareHousePriorityData);
             continue; // Skip to the next warehouse if warehouseId is empty or null
         }
         else if (eddqty <= eddResponse[`${warehouseId}`]) {
-            whareHouseId = warehouseId;  
+            whareHouseId = warehouseId;
             break;
         } else {
-            eddqty = eddqty -  parseInt(eddResponse[`${warehouseId}`]) ;
+            eddqty = eddqty - parseInt(eddResponse[`${warehouseId}`]);
         }
     }
-    if (whareHouseId !== null) {
+    if (whareHouseId) {
         console.log("Final whareHouseId");
-            console.log(whareHouseId);
+        console.log(whareHouseId);
     } else {
         return ({
             "skuId": eddResponse.skuId,
@@ -189,57 +155,77 @@ console.log(wareHousePriorityData);
     eddResponse.warehouse = whareHouseId;
     console.log("EDD Warehouse");
     console.log(eddResponse.warehouse);
+    console.log("SBD Data");
+    console.log(Date());
     SBD = await getSBD(eddResponse.warehouse);
-    eddResponse = { ...eddResponse, "SBD": `${SBD}`};
+    console.log("SBD Data completed");
+    console.log(Date());
+    eddResponse = { ...eddResponse, "SBD": `${SBD}` };
 
-    const courierData = await getCourier(cpin, eddResponse.warehouse, skuWt);
-    console.log("courierData");
-    console.log(courierData);
-
-    if (courierData == false) {
-        return ({
-            "skuId": eddResponse.skuid,
-            "responseCode": "406",
-            "errorDiscription": "The product is not deliverble at this Pincode",
-            "error": "No Courier found for this location"
-        }
-        );
-    }else{
-        EDD = courierData.EDD;
+    console.log("Courier Data");
+    console.log(Date());
+    // ware and pincode 
+    if (await getIsAvailableInNDD(cpin) === eddResponse.warehouse) {
+        console.log("Going in NDD");
+        EDD = 1;
         eddResponse = { ...eddResponse, "EDD": `${EDD}` };
-        
+    } else {
+        const courierData = await getCourier(cpin, eddResponse.warehouse, skuWt);
+        console.log("Going in courier");
+        console.log("Courier Data completed");
+        console.log(Date());
+        console.log(eddResponse.warehouse);
+        console.log(skuWt);
+        console.log("courierData");
+        console.log(courierData);
+        if (courierData == false) {
+            return ({
+                "skuId": eddResponse.skuid,
+                "responseCode": "406",
+                "errorDiscription": "The product is not deliverble at this Pincode",
+                "error": "No Courier found for this location"
+            }
+            );
+        } else {
+            EDD = courierData.EDD;
+            eddResponse = { ...eddResponse, "EDD": `${EDD}` };
+        }
     }
-    eddResponse = { ...eddResponse, "EDD": `${EDD}` };
+        var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD);
+        console.log("total");
 
-    var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD) ;
-    console.log("total");
+        var currentDate = new Date();
+        currentDate.setHours(currentDate.getHours() + 5);
+        currentDate.setMinutes(currentDate.getMinutes() + 30);
 
-    var currentDate = new Date();
-    currentDate.setHours(currentDate.getHours() + 5);
-    currentDate.setMinutes(currentDate.getMinutes() + 30);
+        var cutoff = new Date();
+        cutoff.setDate(currentDate.getDate());
+        if (whareHouseId == "WN-MBHI0003") {
+            cutoff.setHours(14);
+        }
+        else {
+            cutoff.setHours(15);
+        }
+        cutoff.setMinutes(0);
+        cutoff.setSeconds(0);
 
-    var cutoff = new Date();
-    cutoff.setDate(currentDate.getDate())
-    cutoff.setMinutes(0);
-    cutoff.setSeconds(0);
+        var timeLeftToCuttOff = (cutoff.getTime() - currentDate.getTime());
+        timeLeftToCuttOff = Math.ceil(timeLeftToCuttOff / (1000 * 60));
+        timeLeftToCuttOff = timeLeftToCuttOff < 0 ? 1440 - Math.abs(timeLeftToCuttOff) : timeLeftToCuttOff;
 
-    var timeLeftToCuttOff = (cutoff.getTime() - currentDate.getTime());
-    timeLeftToCuttOff = Math.ceil(timeLeftToCuttOff / (1000 * 60));
-    timeLeftToCuttOff = timeLeftToCuttOff < 0 ? 1440 - Math.abs(timeLeftToCuttOff) : timeLeftToCuttOff;
+        eddResponse = { ...eddResponse, "currentDate": `${currentDate}`, "cutoff": `${cutoff}`, "timeLeftInMinutes": `${timeLeftToCuttOff}` };
+        console.log("eddResponse post all time events");
 
-    eddResponse = { ...eddResponse, "currentDate": `${currentDate}`, "cutoff": `${cutoff}`, "timeLeftInMinutes": `${timeLeftToCuttOff}` };
-    console.log("eddResponse post all time events");
-
-    if (cutoff > currentDate) {
-        total = total;
-    }
-    else {
-        total += 1;
-    }
-    date = currentDate.getDate();
-    currentDate.setDate(date + total);
-    eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "courier": "others", "imageLike": `${utils.getImageLink(total)}` };
-    console.log('yayyyy done other');
-    console.log(eddResponse);
-    return eddResponse
+        if (cutoff > currentDate) {
+            total = total;
+        }
+        else {
+            total += 1;
+        }
+        date = currentDate.getDate();
+        currentDate.setDate(date + total);
+        eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "courier": "others", "imageLike": `${utils.getImageLink(total)}` };
+        console.log('yayyyy done other');
+        console.log(eddResponse);
+        return eddResponse;
 }
