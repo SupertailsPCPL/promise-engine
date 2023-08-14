@@ -2,7 +2,7 @@ const promiseEngineConnection = require('../../../dbpromiseengine');
 const getSBD = require('../Bufferdays/sbd');
 const getDBD = require('../Bufferdays/dbd');
 //const getGBD = require('../Bufferdays/gbd')
-const getcPinData = require('../Cpindata/cpindata')
+const getcPinData = require('../Cpindata/cpindata');
 const utils = require("../Util/utils")
 const getIsAvailableInNDD = require("../NDD/ndd.js")
 
@@ -11,12 +11,15 @@ module.exports = { otherEDD, getCourier };
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-async function getCourier(cpin, wareHouseId, skuWt) {
+
+// wareHouseId is not required
+async function getCourier(cpin, skuWt) {
     // console.log(`SELECT * FROM courierV2 WHERE rpin = ${rPin} AND WH = '${wareHouseId}' AND minWt <= ${skuWt} AND maxWt >= ${skuWt} order by EDD;`,);
     let promise = new Promise((resolve, reject) => {
         try {
             promiseEngineConnection.query(
-                `SELECT * FROM courierV2 WHERE rpin = ${cpin} AND WH = '${wareHouseId}' AND minWt <= ${skuWt / 1000} AND maxWt > ${skuWt / 1000} order by EDD;`,
+                `SELECT * FROM courierV3 WHERE cpin = ${cpin} AND minWt <= ${skuWt / 1000} AND maxWt > ${skuWt / 1000};`,
+                //`SELECT * FROM courierV2 WHERE rpin = ${cpin} AND WH = '${wareHouseId}' AND minWt <= ${skuWt / 1000} AND maxWt > ${skuWt / 1000} order by EDD;`,
                 async function (error, courierresults, fields) {
                     if (error) { console.error(error); }
                     if (courierresults) {
@@ -121,7 +124,7 @@ async function otherEDD(cpin, eddResponse) {
     }
     console.log("testing");
     const warehousePriorities = [
-        "WHP1", "WHP2", "WHP3", "WHP4", "WHP5", "WHP6"
+        "WHP1", "WHP2", "WHP3", "WHP4", "WHP5", "WHP6", "WHP7", "WHP8", "WHP9", "WHP10", "WHP11", "WHP12", "WHP13", "WHP14", "WHP15", "WHP16", "WHP17", "WHP18", "WHP19", "WHP20"
     ];
     let eddqty = eddResponse.qty;
     console.log(eddResponse);
@@ -170,7 +173,7 @@ async function otherEDD(cpin, eddResponse) {
         EDD = 1;
         eddResponse = { ...eddResponse, "EDD": `${EDD}` };
     } else {
-        const courierData = await getCourier(cpin, eddResponse.warehouse, skuWt);
+        const courierData = await getCourier(cpin, skuWt); // eddResponse.warehouse not required for the new table
         console.log("Going in courier");
         console.log("Courier Data completed");
         console.log(Date());
@@ -178,7 +181,7 @@ async function otherEDD(cpin, eddResponse) {
         console.log(skuWt);
         console.log("courierData");
         console.log(courierData);
-        if (courierData == false) {
+        if (courierData == false ) {
             return ({
                 "skuId": eddResponse.skuid,
                 "responseCode": "406",
@@ -187,7 +190,10 @@ async function otherEDD(cpin, eddResponse) {
             }
             );
         } else {
-            EDD = courierData.EDD;
+            EDD = courierData[`${whareHouseId}`];
+            console.log("EDD from courier");
+            console.log(EDD);
+            //EDD = courierData.EDD;
             eddResponse = { ...eddResponse, "EDD": `${EDD}` };
         }
     }
@@ -195,8 +201,10 @@ async function otherEDD(cpin, eddResponse) {
         console.log("total");
 
         var currentDate = new Date();
-        currentDate.setHours(currentDate.getHours() + 5);
-        currentDate.setMinutes(currentDate.getMinutes() + 30);
+        currentDate.setHours(currentDate.getHours());
+        currentDate.setMinutes(currentDate.getMinutes());
+        //currentDate.setHours(currentDate.getHours() + 5);
+        //currentDate.setMinutes(currentDate.getMinutes() + 30);
 
         var cutoff = new Date();
         cutoff.setDate(currentDate.getDate());

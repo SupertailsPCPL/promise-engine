@@ -1,6 +1,7 @@
 const GetInventory = require("./Inventory/inventory.js");
-const otherEDD = require("./Othercouriers/othercourier.js")
-const Shipsy = require('./shipsy/shipsy.js')
+const otherEDD = require("./Othercouriers/othercourier.js");
+const Shipsy = require('./shipsy/shipsy.js');
+//const dropShipEDD = require('./DropshipEdd/dropship.js');
 
 module.exports = { EddMain,getEdd }
 
@@ -92,11 +93,18 @@ async function getEdd(cpin,skuId,qty){
                     const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);
                     resolve(b);
                     }
+                    // else if(eddResponse.skuId.includes('DS')){
+                    //     console.log("going with dropShip");
+                    //     const b = await dropShipEDD(cpin, eddResponse);
+                    //     return b;
+                    // }
                     else {
                         console.log("going with other courier ");
                         const b = await otherEDD.otherEDD(cpin, eddResponse);
                         resolve(b);
                     }
+                
+                
         }catch(e){
             console.log(e);
         }

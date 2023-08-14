@@ -81,6 +81,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     else if (shipsy == "Bangalore") {
         whareHouseId = "WN-MBLR0001";
     }
+
     eddResponse = {...eddResponse, "warehouse": `${whareHouseId}`}
     console.log("SBD Data");
     console.log(Date());
@@ -94,8 +95,11 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD);
 
     var currentDate = new Date();
-    currentDate.setHours(currentDate.getHours() + 5);
-    currentDate.setMinutes(currentDate.getMinutes() + 30);
+    currentDate.setHours(currentDate.getHours());
+    currentDate.setMinutes(currentDate.getMinutes());
+
+    // currentDate.setHours(currentDate.getHours() + 5);
+    // currentDate.setMinutes(currentDate.getMinutes() + 30);
 
     var cutoff = new Date();
     cutoff.setDate(currentDate.getDate())

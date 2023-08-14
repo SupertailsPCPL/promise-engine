@@ -2,7 +2,8 @@ const { get } = require("request");
 const GetInventory = require("./Inventory/inventory.js");
 const otherEDD = require("./Othercouriers/othercourier.js")
 const Shipsy = require('./shipsy/shipsy.js')
-const util = require("./Util/utils.js")
+const util = require("./Util/utils.js");
+//const dropShipEDD = require('./DropshipEdd/dropship.js');
 
 module.exports = { EddMaincart, getEdd }
 
@@ -10,7 +11,7 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 //Sample data
-//EddMaincart(560037, "CBONA0005DU,CCOCO0017TR,CCOCO0022TR", "1,3,2");
+//EddMaincart(583279, "CCOCO0009MP,CCOCO0014TR", "1,2");
 //this is the start point of eddcart - Main Function
 async function EddMaincart(cpin, skus, qty) {
     try {
@@ -54,9 +55,23 @@ async function EddMaincart(cpin, skus, qty) {
                 'WN-MBLR0001': { group: [], wt: 0 },
                 'WN-MDEL0002': { group: [], wt: 0 },
                 'WN-MBHI0003': { group: [], wt: 0 },
+                'WN-DRKOL01': { group: [], wt: 0 },
                 'PWH001': { group: [], wt: 0 },
                 'WH004': { group: [], wt: 0 },
-                'WH005': { group: [], wt: 0 }
+                'WH005': { group: [], wt: 0 },
+                'WH006': { group: [], wt: 0 },
+                'WH007': { group: [], wt: 0 },
+                'WH008': { group: [], wt: 0 },
+                'WH009': { group: [], wt: 0 },
+                'WH010': { group: [], wt: 0 },
+                'WH011': { group: [], wt: 0 },
+                'WH012': { group: [], wt: 0 },
+                'WH013': { group: [], wt: 0 },
+                'WH014': { group: [], wt: 0 },
+                'WH015': { group: [], wt: 0 },
+                'WH016': { group: [], wt: 0 },
+                'WH017': { group: [], wt: 0 },
+                'WH018': { group: [], wt: 0 }
             };
 
             console.log("before");
@@ -119,22 +134,26 @@ async function EddMaincart(cpin, skus, qty) {
                 const group = whGroups[warehouseId].group;
                 for (let i = 0; i < group.length; i++) {
                     const currentDate = new Date();
-                    currentDate.setHours(currentDate.getHours() + 5);
-                    currentDate.setMinutes(currentDate.getMinutes() + 30);
-
-                    const courierData = await otherEDD.getCourier(group[i].cpin, group[i].warehouse, whGroups[warehouseId].wt);
-                    let daycount = parseInt(courierData.EDD) + parseInt(group[i].SBD) + parseInt(group[i].DBD);
-
+                    currentDate.setHours(currentDate.getHours());
+                    currentDate.setMinutes(currentDate.getMinutes());
+                    //currentDate.setHours(currentDate.getHours() + 5);
+                    //currentDate.setMinutes(currentDate.getMinutes() + 30);
+                    let wh = group[i].warehouse;
+                    const courierData = await otherEDD.getCourier(group[i].cpin, whGroups[warehouseId].wt); // group[i].warehouse not required
+                    let daycount = parseInt(courierData[`${wh}`]); + parseInt(group[i].SBD) + parseInt(group[i].DBD);
+                    console.log("EDD Daataa");
+                    console.log(courierData[`${wh}`]); 
+                    //parseInt(courierData.EDD)
                     const cutoff = new Date();
                     cutoff.setDate(currentDate.getDate());
 
                     if (group[i].warehouse === "WN-MBHI0003") {
-                        cutoff.setHours(8);
+                        cutoff.setHours(14);
                     } else {
-                        cutoff.setHours(9);
+                        cutoff.setHours(15);
                     }
 
-                    cutoff.setMinutes(30);
+                    cutoff.setMinutes(0);
                     cutoff.setSeconds(0);
 
                     if (cutoff < currentDate) {
@@ -198,6 +217,11 @@ async function getEdd(cpin, skuId, qty) {
                 const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);
                 resolve(b);
             }
+            // else if(eddResponse.skuId.includes('DS')){
+                    //     console.log("going with dropShip");
+                    //     const b = await dropShipEDD(cpin, eddResponse);
+                    //     return b;
+                    // }
             else {
                 console.log("going with other courier ");
                 console.log(eddResponse)
