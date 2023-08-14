@@ -225,11 +225,9 @@ async function otherEDD(cpin, eddResponse) {
         console.log("eddResponse post all time events");
 
         if (cutoff > currentDate) {
-            console.log("cut-off before");
             total = total;
         }
         else {
-            console.log("cutoff - after");
             total += 1;
         }
         date = currentDate.getDate();

@@ -88,6 +88,10 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     else if (shipsy == "Bangalore") {
         whareHouseId = "WN-MBLR0001";
     }
+
+    //This is for handling shpsy simple and bundle skusss
+    //what was before
+    // eddResponse = {...eddResponse, "warehouse": `${whareHouseId}`}
     if (eddResponse.Type === "SIMPLE") {
         p1InvQty = eddResponse[`${whareHouseId}`]
         console.log("Inv");
@@ -123,7 +127,6 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
         }
     }
 
-    // eddResponse = {...eddResponse, "warehouse": `${whareHouseId}`}
     console.log("SBD Data");
     console.log(Date());
     SBD = await getSBD(whareHouseId);
