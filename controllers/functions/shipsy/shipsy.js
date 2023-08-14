@@ -4,6 +4,9 @@ const getDBD = require('../Bufferdays/dbd');
 //const getGBD = require('../Bufferdays/gbd')
 const getcPinData = require('../Cpindata/cpindata')
 const utils = require("../Util/utils")
+const otherEDD = require("../Othercouriers/othercourier.js");
+const GetInventory = require("../Inventory/inventory.js");
+
 
 
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -47,6 +50,10 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     let DBD = 0;
     let whareHouseId = "";
     let GBD = 0;
+    let qty = eddResponse.qty;
+    let p1InvQty = 0;
+
+
     console.log("DBD data");
     console.log(Date());
     DBD = await getDBD(cpin);
@@ -81,8 +88,42 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     else if (shipsy == "Bangalore") {
         whareHouseId = "WN-MBLR0001";
     }
+    if (eddResponse.Type === "SIMPLE") {
+        p1InvQty = eddResponse[`${whareHouseId}`]
+        console.log("Inv");
+        console.log(p1InvQty);
+        eddResponse = { ...eddResponse, "warehouse": `${whareHouseId}`, "InvQty": p1InvQty };
+        console.log("skuData post whid and invqty");
+        console.log(eddResponse);
+        if (p1InvQty < qty) {
+            console.log("going with other courier ");
+            const b = await otherEDD.otherEDD(cpin, eddResponse);
+            return b;
+        }
+    }
+    else {
+        console.log("hey enter bundle inv check");
+        let eddv = JSON.parse(eddResponse.componentSkusData);
+        for (let i = 0; i < eddv.length; i++) {
+            let element = eddv[i];;
+            console.log(element);
+            console.log("Elelmetttttttt");
+            console.log(element.skuid);
+            console.log(element);
+            let invQty = await GetInventory(element.skuid);
+            p1InvQty = invQty[`${whareHouseId}`]
+            eddResponse = { ...eddResponse, "warehouse": `${whareHouseId}` };
+            console.log("skuData post whid and invqty");
+            console.log(eddResponse);
+            if (p1InvQty < element.qty) {
+                console.log("going with other courier ");
+                const b = await otherEDD(cpin, eddResponse);
+                return b;
+            }
+        }
+    }
 
-    eddResponse = {...eddResponse, "warehouse": `${whareHouseId}`}
+    // eddResponse = {...eddResponse, "warehouse": `${whareHouseId}`}
     console.log("SBD Data");
     console.log(Date());
     SBD = await getSBD(whareHouseId);
@@ -103,7 +144,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
 
     var cutoff = new Date();
     cutoff.setDate(currentDate.getDate())
-    whareHouseId == "WN-MBHI0003" ? cutoff.setHours(12) : cutoff.setHours(14);
+    whareHouseId == "WN-MBHI0003" ? cutoff.setHours(7) : cutoff.setHours(8);
     whareHouseId == "WN-MBHI0003" ? cutoff.setMinutes(30) : cutoff.setMinutes(0);
     cutoff.setSeconds(0);
 
@@ -119,10 +160,13 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     else {
         total += 1;
     }
+    if(eddResponse.warehouse == "WN-MBHI0003"){
+        total +=1
+    }
     date = currentDate.getDate();
     currentDate.setDate(date + total);
     eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "FLEDD": 0, "LLEDD": 0, "courier": "shipsy", "imageLike": `${utils.getImageLink(total)}` };
     console.log('yayyyy done');
     console.log(eddResponse);
-    return eddResponse
+    return eddResponse;
 }

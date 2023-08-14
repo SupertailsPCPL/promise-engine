@@ -11,7 +11,7 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 //Sample data
-//EddMaincart(583279, "CCOCO0009MP,CCOCO0014TR", "1,2");
+//EddMaincart(122009, "CAPCL0005BR,CCOCO0022TR", "1,1");
 //this is the start point of eddcart - Main Function
 async function EddMaincart(cpin, skus, qty) {
     try {
@@ -90,6 +90,7 @@ async function EddMaincart(cpin, skus, qty) {
 
                 if (a.hasOwnProperty('courier')) {
                     if (a.courier === "shipsy") {
+                        console.log("shippppp");
                         shipsyItems.push(a);
                         shipsyWarehouse = a.warehouse;
                         shipsyWeight += a.skuWt;
@@ -117,15 +118,15 @@ async function EddMaincart(cpin, skus, qty) {
                 const wtKey = whGroups[shipsyWarehouse].wt;
 
                 for (let i = 0; i < shipsyItems.length; i++) {
-                    const element = shipsyItems[i];
+                    let element = shipsyItems[i];
                     element.courier = "others";
                     group.push(element);
                     wtKey += element.weight;
                 }
             } else {
                 for (let i = 0; i < shipsyItems.length; i++) {
-                    const element = shipsyItems[i];
-                    element.combinedWt = shipsyWeight;
+                    let element = shipsyItems[i];
+                    element = {...element, "combinedWt":shipsyWeight}
                     final.push(element);
                 }
             }
@@ -140,24 +141,30 @@ async function EddMaincart(cpin, skus, qty) {
                     //currentDate.setMinutes(currentDate.getMinutes() + 30);
                     let wh = group[i].warehouse;
                     const courierData = await otherEDD.getCourier(group[i].cpin, whGroups[warehouseId].wt); // group[i].warehouse not required
-                    let daycount = parseInt(courierData[`${wh}`]); + parseInt(group[i].SBD) + parseInt(group[i].DBD);
+                    let daycount = parseInt(courierData[`${wh}`]) + parseInt(group[i].SBD) + parseInt(group[i].DBD);
                     console.log("EDD Daataa");
+                    console.log(group[i].SBD);
                     console.log(courierData[`${wh}`]); 
+                    console.log("day count");
+                    console.log(daycount);
                     //parseInt(courierData.EDD)
                     const cutoff = new Date();
                     cutoff.setDate(currentDate.getDate());
 
                     if (group[i].warehouse === "WN-MBHI0003") {
-                        cutoff.setHours(14);
+                        cutoff.setHours(8);
                     } else {
-                        cutoff.setHours(15);
+                        cutoff.setHours(9);
                     }
 
-                    cutoff.setMinutes(0);
+                    cutoff.setMinutes(30);
                     cutoff.setSeconds(0);
 
-                    if (cutoff < currentDate) {
-                        daycount = daycount + 1;
+                    if (cutoff > currentDate) {
+                        daycount = daycount;
+                    }
+                    else{
+                        daycount +=1;
                     }
 
                     group[i].dayCount = daycount;

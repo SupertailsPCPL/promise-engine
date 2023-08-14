@@ -209,12 +209,12 @@ async function otherEDD(cpin, eddResponse) {
         var cutoff = new Date();
         cutoff.setDate(currentDate.getDate());
         if (whareHouseId == "WN-MBHI0003") {
-            cutoff.setHours(14);
+            cutoff.setHours(8);
         }
         else {
-            cutoff.setHours(15);
+            cutoff.setHours(9);
         }
-        cutoff.setMinutes(0);
+        cutoff.setMinutes(30);
         cutoff.setSeconds(0);
 
         var timeLeftToCuttOff = (cutoff.getTime() - currentDate.getTime());
@@ -225,9 +225,11 @@ async function otherEDD(cpin, eddResponse) {
         console.log("eddResponse post all time events");
 
         if (cutoff > currentDate) {
+            console.log("cut-off before");
             total = total;
         }
         else {
+            console.log("cutoff - after");
             total += 1;
         }
         date = currentDate.getDate();
