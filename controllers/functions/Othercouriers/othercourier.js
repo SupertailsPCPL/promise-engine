@@ -5,6 +5,7 @@ const getDBD = require('../Bufferdays/dbd');
 const getcPinData = require('../Cpindata/cpindata');
 const utils = require("../Util/utils")
 const getIsAvailableInNDD = require("../NDD/ndd.js")
+const getCutOff = require('../CutOff/cutoOff.js');
 
 module.exports = { otherEDD, getCourier };
 
@@ -171,8 +172,10 @@ async function otherEDD(cpin, eddResponse) {
     if (await getIsAvailableInNDD(cpin) === eddResponse.warehouse) {
         console.log("Going in NDD");
         EDD = 1;
-        eddResponse = { ...eddResponse, "EDD": `${EDD}` };
+        eddResponse = { ...eddResponse,courier:"NDD", "EDD": `${EDD}` };
     } else {
+        eddResponse = { ...eddResponse, courier:"others" };
+
         const courierData = await getCourier(cpin, skuWt); // eddResponse.warehouse not required for the new table
         console.log("Going in courier");
         console.log("Courier Data completed");
@@ -206,17 +209,27 @@ async function otherEDD(cpin, eddResponse) {
         //currentDate.setHours(currentDate.getHours() + 5);
         //currentDate.setMinutes(currentDate.getMinutes() + 30);
 
+        let cutOffData = await getCutOff();
+        console.log("cutoff aj");
+        console.log(cutOffData);
+        console.log(eddResponse.warehouse);
+        let cutOffTime ;
+        if (eddResponse.courier == "others") {
+             cutOffTime = cutOffData[`others-${eddResponse.warehouse}`].split(':');
+        }
+        else{
+            cutOffTime = cutOffData[`ndd`].split(':');
+        }
+        console.log("cutOffTime",cutOffTime);
+        let cuttOfHour = parseInt(cutOffTime[0]);
+        let cuttOfMin = parseInt(cutOffTime[1]);
+        console.log("cuttOfHour",cuttOfHour,"cuttOfMin",cuttOfMin);
         var cutoff = new Date();
         cutoff.setDate(currentDate.getDate());
-        if (whareHouseId == "WN-MBHI0003") {
-            cutoff.setHours(8);
-        }
-        else {
-            cutoff.setHours(9);
-        }
-        cutoff.setMinutes(30);
+        cutoff.setHours(cuttOfHour);
+        cutoff.setMinutes(cuttOfMin)
         cutoff.setSeconds(0);
-
+        eddResponse = { ...eddResponse, ...cutOffData}
         var timeLeftToCuttOff = (cutoff.getTime() - currentDate.getTime());
         timeLeftToCuttOff = Math.ceil(timeLeftToCuttOff / (1000 * 60));
         timeLeftToCuttOff = timeLeftToCuttOff < 0 ? 1440 - Math.abs(timeLeftToCuttOff) : timeLeftToCuttOff;
@@ -230,9 +243,24 @@ async function otherEDD(cpin, eddResponse) {
         else {
             total += 1;
         }
+
         date = currentDate.getDate();
         currentDate.setDate(date + total);
-        eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "courier": "others", "imageLike": `${utils.getImageLink(total)}` };
+
+        if( eddResponse.courier == "NDD"|| eddResponse['ndd-disable-Sunday-Delivery'] == "true" )
+     {
+        console.log(eddResponse['ndd-disable-Sunday-Delivery']);
+        console.log("in is adsas Sunday");
+        let isSunday = weekday[currentDate.getDay()] == "Sun";
+     if(isSunday){
+        console.log("in isSunday");
+        console.log("total",total);
+        total += 1;
+        console.log("total",total);
+        date = currentDate.getDate();
+        currentDate.setDate(date + total);
+     }}
+        eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "imageLike": `${utils.getImageLink(total)}` };
         console.log('yayyyy done other');
         console.log(eddResponse);
         return eddResponse;
