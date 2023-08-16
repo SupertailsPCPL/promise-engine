@@ -11,7 +11,7 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 //Sample data
-// EddMaincart(122009, "CAPCL0005BR,CCOCO0022TR", "1,1");
+//EddMaincart(122009, "CAPCL0005BR,CCOCO0022TR", "1,1");
 //this is the start point of eddcart - Main Function
 async function EddMaincart(cpin, skus, qty) {
     try {

@@ -24,12 +24,8 @@ app.use(cors({
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 
-app.use("/EDD",EDD);
+app.use("/",EDD);
 
-
-app.get('/',(req,res)=>{
-    res.send("Welcome To Promise Engine Backend")
-})
 
 
 //START THE SERVER AND LISTEN TO THE PORT NO {4000}

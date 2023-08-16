@@ -6,7 +6,7 @@ async function getCutOff() {
     let promise = new Promise((resolve, reject) => {
         try {
             promiseEngineConnection.query(
-                `SELECT * FROM promiseEngine.EDDCutOff`,
+                `SELECT * FROM promiseEngine.EDDGlobalVariables`,
                 async function (error, CuttOffresults, fields) {
                     if (error) { console.error(error); }
                     // console.log('9-T9-CuttOffresults');

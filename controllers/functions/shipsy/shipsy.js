@@ -185,13 +185,13 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     }
     date = currentDate.getDate();
     currentDate.setDate(date + total);
-     if(eddResponse['shipsy-disable-Sunday-Delivery'] == "true")
+     if(eddResponse['shipsy-disable-Sunday-Delivery'])
      {
         console.log(eddResponse['shipsy-disable-Sunday-Delivery']);
         console.log("in is adsas Sunday");
-        let isSunday = weekday[currentDate.getDay()] == "Sun";
-     if(isSunday){
-        console.log("in isSunday");
+        let isDay = weekday[currentDate.getDay()] == eddResponse['shipsy-disable-Sunday-Delivery'];
+     if(isDay){
+        console.log("in is day");
         console.log("total",total);
         total += 1;
         console.log("total",total);

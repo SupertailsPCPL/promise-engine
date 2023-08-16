@@ -218,7 +218,7 @@ async function otherEDD(cpin, eddResponse) {
              cutOffTime = cutOffData[`others-${eddResponse.warehouse}`].split(':');
         }
         else{
-            cutOffTime = cutOffData[`ndd`].split(':');
+            cutOffTime = cutOffData[`ndd-${eddResponse.warehouse}`].split(':');
         }
         console.log("cutOffTime",cutOffTime);
         let cuttOfHour = parseInt(cutOffTime[0]);
@@ -226,7 +226,7 @@ async function otherEDD(cpin, eddResponse) {
         console.log("cuttOfHour",cuttOfHour,"cuttOfMin",cuttOfMin);
         var cutoff = new Date();
         cutoff.setDate(currentDate.getDate());
-        cutoff.setHours(cuttOfHour);
+        cutoff.setHours(cuttOfHour);    
         cutoff.setMinutes(cuttOfMin)
         cutoff.setSeconds(0);
         eddResponse = { ...eddResponse, ...cutOffData}
@@ -247,13 +247,13 @@ async function otherEDD(cpin, eddResponse) {
         date = currentDate.getDate();
         currentDate.setDate(date + total);
 
-        if( eddResponse.courier == "NDD"|| eddResponse['ndd-disable-Sunday-Delivery'] == "true" )
+        if( eddResponse.courier == "NDD"|| eddResponse['ndd-disable-Sunday-Delivery'])
      {
         console.log(eddResponse['ndd-disable-Sunday-Delivery']);
         console.log("in is adsas Sunday");
-        let isSunday = weekday[currentDate.getDay()] == "Sun";
-     if(isSunday){
-        console.log("in isSunday");
+        let isDay = weekday[currentDate.getDay()] == eddResponse['ndd-disable-Sunday-Delivery'];
+     if(isDay){
+        console.log("in is day");
         console.log("total",total);
         total += 1;
         console.log("total",total);

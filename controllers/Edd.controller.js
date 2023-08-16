@@ -8,10 +8,10 @@ const CartEddFunctions = require("./functions/eddcart_function");
 //OUTPUT: RESPONSE
 //PATH = '/getEdd'
 
-router.get("/product/Edd", async (req, res, next) => {
+router.get("/edd", async (req, res, next) => {
    
     let cpin = req?.query?.cpin ?? false;
-    let skus = req?.query?.skus ?? false;
+    let skus = req?.query?.skuid ?? false;
     let qty = req?.query?.qty ?? 1;
     console.log(cpin,skus,qty);
 
@@ -23,10 +23,10 @@ router.get("/product/Edd", async (req, res, next) => {
     }); 
   });
 
-  router.get("/cart/Edd", async (req, res, next) => {
+  router.get("/cartedd", async (req, res, next) => {
    
     let cpin = req?.query?.cpin ?? false;
-    let skus = req?.query?.skus ?? false;
+    let skus = req?.query?.skuid ?? false;
     let qty = req?.query?.qty ?? 1;
     console.log(cpin,skus,qty);
 
@@ -37,11 +37,9 @@ router.get("/product/Edd", async (req, res, next) => {
     }); 
   });
 
-router.get("/", (req, res, next) => {
-    return res.status(200).json({
-      message: "EDD Test successfully",
-    });
-  });
+router.get('/',(req,res)=>{
+    res.send("Welcome To Promise Engine Backend")
+})
   
   module.exports = router;
   
