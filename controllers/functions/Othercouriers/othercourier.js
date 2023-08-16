@@ -248,7 +248,7 @@ async function otherEDD(cpin, eddResponse) {
         date = currentDate.getDate();
         currentDate.setDate(date + total);
 
-        if( eddResponse.courier == "NDD"|| eddResponse['ndd-disable-Sunday-Delivery'])
+        if( eddResponse.courier == "NDD" || eddResponse['ndd-disable-Sunday-Delivery'])
      {
         console.log(eddResponse['ndd-disable-Sunday-Delivery']);
         console.log("in is adsas Sunday");

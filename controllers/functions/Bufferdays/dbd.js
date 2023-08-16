@@ -1,4 +1,3 @@
-
 const promiseEngineConnection = require('../../../dbpromiseengine');
 
 module.exports = getDBD;

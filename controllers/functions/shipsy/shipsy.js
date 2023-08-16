@@ -189,6 +189,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
      {
         console.log(eddResponse['shipsy-disable-Sunday-Delivery']);
         console.log("in is adsas Sunday");
+        //Checking Whether day is equal to the current day
         let isDay = weekday[currentDate.getDay()] == eddResponse['shipsy-disable-Sunday-Delivery'];
      if(isDay){
         console.log("in is day");

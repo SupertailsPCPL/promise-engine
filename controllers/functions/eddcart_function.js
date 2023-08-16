@@ -152,9 +152,9 @@ async function EddMaincart(cpin, skus, qty) {
                     cutoff.setDate(currentDate.getDate());
 
                     if (group[i].warehouse === "WN-MBHI0003") {
-                        cutoff.setHours(8);
+                        cutoff.setHours(14);
                     } else {
-                        cutoff.setHours(9);
+                        cutoff.setHours(15);
                     }
 
                     cutoff.setMinutes(30);
