@@ -210,7 +210,7 @@ async function otherEDD(cpin, eddResponse) {
         //currentDate.setMinutes(currentDate.getMinutes() + 30);
 
         let cutOffData = await getCutOff();
-        console.log("cutoff aj");
+        console.log("cutoff");
         console.log(cutOffData);
         console.log(eddResponse.warehouse);
         let cutOffTime ;
@@ -218,6 +218,7 @@ async function otherEDD(cpin, eddResponse) {
              cutOffTime = cutOffData[`others-${eddResponse.warehouse}`].split(':');
         }
         else{
+            //Created ndd for three warehouse
             cutOffTime = cutOffData[`ndd-${eddResponse.warehouse}`].split(':');
         }
         console.log("cutOffTime",cutOffTime);
@@ -251,6 +252,7 @@ async function otherEDD(cpin, eddResponse) {
      {
         console.log(eddResponse['ndd-disable-Sunday-Delivery']);
         console.log("in is adsas Sunday");
+        //Checking Whether day is equal to the current day 
         let isDay = weekday[currentDate.getDay()] == eddResponse['ndd-disable-Sunday-Delivery'];
      if(isDay){
         console.log("in is day");
