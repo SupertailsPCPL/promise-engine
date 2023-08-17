@@ -82,9 +82,10 @@ async function UniCommerceApiinventory(wareHouseId, skuid, accessToken) {
           resolve(false);
         } else {
           const data = JSON.parse(body);
-          if (data.successful === true) {
+          if (data && data.successful === true) {
             resolve(data.inventorySnapshots); // Return the inventory data
           } else {
+            console.error('Error in UniCommerce response:', data);
             resolve(false);
           }
         }
@@ -260,7 +261,7 @@ async function runInventorySnapshotForWarehouses(warehouseIds) {
 }
 
 // List of warehouses for inventory snapshot process
-const warehouses = ["WN-MDEL0002", "WN-MBHI0003", "WN-MBLR0001", "WH004", "WH005", "PWH001", "WH006", "WH007", "WH008", "WH009", "WH010", "WH011", "WH012", "WH013", "WH014", "WH015", "WH016", "WH017", "WN-DRKOL01"];
+const warehouses = ["WN-MDEL0002", "WN-MBHI0003", "WN-MBLR0001", "PWH001", "WH004", "WH005", "WN-DRKOL01", "WH006", "WH007", "WH008", "WH009", "WH010", "WH011", "WH012", "WH013", "WH014", "WH015", "WH016", "WH017", "WH018"];
 
 // Start the inventory snapshot process for the specified warehouses
 runInventorySnapshotForWarehouses(warehouses)
