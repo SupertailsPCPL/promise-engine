@@ -1,6 +1,6 @@
 // Import necessary modules
 const request = require('request');
-const connection = require('./dbpromiseEngine.js');
+const connection = require('./dbpromiseengine.js');
 
 // Function to fetch item master data from the database
 async function GetItemMaster() {
@@ -138,8 +138,7 @@ async function runInventorySnapshotForWarehouses(warehouseIds) {
 }
 
 // List of warehouses to process inventory data
-const warehouses = ["WH004", "WH005", "PWH001", "WN-MDEL0002", "WN-MBHI0003", "WN-MBLR0001"];
-
+const warehouses = ["WN-MDEL0002", "WN-MBHI0003", "WN-MBLR0001", "PWH001", "WH004", "WH005", "WN-DRKOL01", "WH006", "WH007", "WH008", "WH009", "WH010", "WH011", "WH012", "WH013", "WH014", "WH015", "WH016", "WH017", "WH018"];
 // Start the inventory snapshot process for all warehouses and return the result
 runInventorySnapshotForWarehouses(warehouses)
   .then(result => {
