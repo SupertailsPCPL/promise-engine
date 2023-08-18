@@ -99,7 +99,7 @@ async function bulkInsertInventory(inventoryData, wareHouseId) {
 }
 
 // Function to process inventory data for a single warehouse
-async function processWarehouse(warehouseId) {
+async function processWarehouse(warehouseId,accessToken) {
   try {
     // Fetch item master data only once to avoid unnecessary repetitions
     const itemMasterData = await GetItemMaster();
@@ -113,9 +113,8 @@ async function processWarehouse(warehouseId) {
       const skuIdsbatch = batch.flatMap(item => item?.skuId);
 
       console.log(`Processing batch ${i} for warehouse: ${warehouseId}, batch size: ${batch.length}`);
-
       // Fetch inventory data from UniCommerce API for the current batch and warehouse
-      const inventorySnapshots = await UniCommerceApiinventory(warehouseId, skuIdsbatch, "52bcbe95-07a2-4b9f-9863-a37105a14acc");
+      const inventorySnapshots = await UniCommerceApiinventory(warehouseId, skuIdsbatch, accessToken);
 
       // Insert or update the inventory data into the database for the current warehouse
       await bulkInsertInventory(inventorySnapshots, warehouseId);
@@ -128,8 +127,9 @@ async function processWarehouse(warehouseId) {
 // Function to run the inventory snapshot for multiple warehouses concurrently
 async function runInventorySnapshotForWarehouses(warehouseIds) {
   try {
+    const accessToken = await getAcessTokenUniCommerceAPi()
     // Use Promise.all to run the processWarehouse function for each warehouse concurrently
-    await Promise.all(warehouseIds.map(warehouseId => processWarehouse(warehouseId)));
+    await Promise.all(warehouseIds.map(warehouseId => processWarehouse(warehouseId,accessToken)));
     return true; // Return true after all warehouses have been processed successfully
   } catch (error) {
     console.error('Error:', error);
@@ -138,7 +138,7 @@ async function runInventorySnapshotForWarehouses(warehouseIds) {
 }
 
 // List of warehouses to process inventory data
-const warehouses = ["WN-MDEL0002", "WN-MBHI0003", "WN-MBLR0001", "PWH001", "WH004", "WH005", "WN-DRKOL01", "WH006", "WH007", "WH008", "WH009", "WH010", "WH011", "WH012", "WH013", "WH014", "WH015", "WH016", "WH017", "WH018"];
+const warehouses = ["WN-MDEL0002", "WN-MBHI0003", "WN-MBLR0001", "PWH001", "WH004", "WH005",  "WH006", "WH007", "WH008", "WH009", "WH010", "WH011", "WH012", "WH013", "WH014", "WH015", "WH016", "WH017", "WH018"];
 // Start the inventory snapshot process for all warehouses and return the result
 runInventorySnapshotForWarehouses(warehouses)
   .then(result => {
@@ -147,3 +147,47 @@ runInventorySnapshotForWarehouses(warehouses)
   .catch(err => {
     console.error('Error during inventory snapshot process:', err);
   });
+
+
+
+
+
+
+
+//get access token from uni commerce api
+async function getAcessTokenUniCommerceAPi() {
+  console.log("entered access token");
+  let promise = new Promise(async (resolve, reject) => {
+      try {
+          var url = 'https://warehousenow.unicommerce.com/oauth/token?grant_type=password&client_id=my-trusted-client&username=harshlovespets@supertails.com&password=Super@2021';
+          var headers = {
+              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0',
+              'Content-Type': 'application/json'
+          };
+
+          request.get({ url: url, headers: headers }, async function (e, r, body) {
+              if (e) {
+                  console.error(e);
+                  resolve(false)
+              }
+
+              if (r) {
+                  var obj = JSON.parse(r.body);
+                  console.log(obj);
+                  resolve(obj.access_token);
+                  console.log("done with access token");
+
+              }
+              else {
+                  console.log(false);
+              }
+          });
+      }
+      catch (e) {
+          console.error(e);
+          resolve(false);
+      }
+  });
+  return await promise;
+}
+
