@@ -19,7 +19,7 @@ async function getCourier(cpin, skuWt) {
     let promise = new Promise((resolve, reject) => {
         try {
             promiseEngineConnection.query(
-                `SELECT * FROM courierV3 WHERE cpin = ${cpin} AND minWt <= ${skuWt / 1000} AND maxWt > ${skuWt / 1000};`,
+                `SELECT * FROM courierV3 WHERE cpin = ${cpin} AND minWt <= ${skuWt} AND maxWt > ${skuWt};`,
                 //`SELECT * FROM courierV2 WHERE rpin = ${cpin} AND WH = '${wareHouseId}' AND minWt <= ${skuWt / 1000} AND maxWt > ${skuWt / 1000} order by EDD;`,
                 async function (error, courierresults, fields) {
                     if (error) { console.error(error); }
@@ -252,7 +252,7 @@ async function otherEDD(cpin, eddResponse) {
      {
         console.log(eddResponse['ndd-disable-Sunday-Delivery']);
         console.log("in is adsas Sunday");
-        //Checking Whether day is equal to the current day 
+        //Checking Whether current day is equql to ndd disable day 
         let isDay = weekday[currentDate.getDay()] == eddResponse['ndd-disable-Sunday-Delivery'];
      if(isDay){
         console.log("in is day");

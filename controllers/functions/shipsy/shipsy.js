@@ -180,9 +180,9 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     else {
         total += 1;
     }
-    if(eddResponse.warehouse == "WN-MBHI0003"){
-        total +=1
-    }
+    // if(eddResponse.warehouse == "WN-MBHI0003"){
+    //     total +=1
+    // }
     date = currentDate.getDate();
     currentDate.setDate(date + total);
      if(eddResponse['shipsy-disable-Sunday-Delivery'])

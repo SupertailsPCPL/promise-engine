@@ -11,7 +11,7 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 //Sample data
-//EddMaincart(122009, "CAPCL0005BR,CCOCO0022TR", "1,1");
+//EddMaincart(400067, "DFOWF0033RC", "1");
 //this is the start point of eddcart - Main Function
 async function EddMaincart(cpin, skus, qty) {
     try {
@@ -112,16 +112,25 @@ async function EddMaincart(cpin, skus, qty) {
             console.log(final);
             console.log('ooooooo');
             console.log(whGroups);
-
-            if ((shipsyWeight !== 0 && shipsyWeight / 1000) > 20) {
-                const group = whGroups[shipsyWarehouse].group;
-                const wtKey = whGroups[shipsyWarehouse].wt;
-
+            console.log("shipsyWeight");
+            console.log(shipsyWeight);
+            console.log(shipsyWarehouse);
+            if (shipsyWeight !== 0 && shipsyWeight > 20) {
+                // let group = whGroups[shipsyWarehouse].group;
+                // let wtKey = shipsyWeight;
+                // console.log("Non Shipsy")
+                // console.log(group);   
                 for (let i = 0; i < shipsyItems.length; i++) {
+                    console.log("haaa"); 
                     let element = shipsyItems[i];
+                    // console.log(element);
                     element.courier = "others";
-                    group.push(element);
-                    wtKey += element.weight;
+                    console.log("element");
+                    console.log(element);
+                    element = {...element, "combinedWt":shipsyWeight};
+                    const b = await otherEDD.otherEDD(shipsyItems[i].cpin, element);
+                    // element = {...element, "combinedWt":shipsyWeight};
+                    final.push(b);
                 }
             } else {
                 for (let i = 0; i < shipsyItems.length; i++) {
