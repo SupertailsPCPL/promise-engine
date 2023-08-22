@@ -1,8 +1,8 @@
 const request = require('request');
 const csvtojson = require('csvtojson');
-const connection = require('./dbpromiseengine.js');
+const connection = require('../dbpromiseEngine.js');
 
-const csvFileUrl = 'https://warehousenow.unicommerce.com/open/redirection/export/aHR0cHM6Ly91bmljb21tZXJjZS1leHBvcnQtaW4uczMuYW1hem9uYXdzLmNvbS93YXJlaG91c2Vub3cvNjRkZTAwYzA2Mzc3MTA2NGNiOGRkYmIzL0V4cG9ydC1JdGVtJTIwTWFzdGVyLXdhcmVob3VzZW5vd18xNzA4MjAyMzE2NDMwNS5jc3YjIyM2NGRlMDBjMDYzNzcxMDY0Y2I4ZGRiYjMjIyMxN18wOF8yMDIz'
+const csvFileUrl = 'https://warehousenow.unicommerce.com/open/redirection/export/aHR0cHM6Ly91bmljb21tZXJjZS1leHBvcnQtaW4uczMuYW1hem9uYXdzLmNvbS93YXJlaG91c2Vub3cvNjRlNDU4NTVhYTM5ZjYyZjExZjkzODk0L0V4cG9ydC1JdGVtJTIwTWFzdGVyLXdhcmVob3VzZW5vd18yMjA4MjAyMzEyMTAyMi5jc3YjIyM2NGU0NTg1NWFhMzlmNjJmMTFmOTM4OTQjIyMyMl8wOF8yMDIz'
 
 const BATCH_SIZE = 1000; // Set the batch size according to your database limits
 
