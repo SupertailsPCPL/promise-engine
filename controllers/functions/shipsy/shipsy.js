@@ -1,4 +1,4 @@
-const promiseEngineConnection = require('../../../dbpromiseengine');
+const promiseEngineConnection = require('../../../dbPromiseEngine');
 const getSBD = require('../Bufferdays/sbd');
 const getDBD = require('../Bufferdays/dbd');
 const getCutOff = require('../CutOff/cutoOff.js');

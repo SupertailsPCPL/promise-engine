@@ -1,4 +1,4 @@
-const promiseEngineConnection = require('../../../dbpromiseengine');
+const promiseEngineConnection = require('../../../dbPromiseEngine');
 
 module.exports = getcPinData;
 

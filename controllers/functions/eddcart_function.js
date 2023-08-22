@@ -4,6 +4,7 @@ const otherEDD = require("./Othercouriers/othercourier.js")
 const Shipsy = require('./shipsy/shipsy.js')
 const util = require("./Util/utils.js");
 //const dropShipEDD = require('./DropshipEdd/dropship.js');
+const getCutOff = require('./CutOff/cutoOff.js');
 
 module.exports = { EddMaincart, getEdd }
 
@@ -11,7 +12,7 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 //Sample data
-//EddMaincart(400067, "DFOWF0033RC", "1");
+EddMaincart(560077, "CFODF0010DR", '2');
 //this is the start point of eddcart - Main Function
 async function EddMaincart(cpin, skus, qty) {
     try {
@@ -128,9 +129,13 @@ async function EddMaincart(cpin, skus, qty) {
                     console.log("element");
                     console.log(element);
                     element = {...element, "combinedWt":shipsyWeight};
-                    const b = await otherEDD.otherEDD(shipsyItems[i].cpin, element);
+                    console.log("shipsyWeight");
+                    console.log(shipsyWeight,element);
+                    whGroups[`${shipsyWarehouse}`].group = [...whGroups[`${shipsyWarehouse}`].group,element];
+                    whGroups[`${shipsyWarehouse}`].wt = shipsyWeight;
+                    // const b = await otherEDD.otherEDD(shipsyItems[i].cpin, element);
                     // element = {...element, "combinedWt":shipsyWeight};
-                    final.push(b);
+                    // final.push(element);
                 }
             } else {
                 for (let i = 0; i < shipsyItems.length; i++) {
@@ -157,16 +162,27 @@ async function EddMaincart(cpin, skus, qty) {
                     console.log("day count");
                     console.log(daycount);
                     //parseInt(courierData.EDD)
-                    const cutoff = new Date();
-                    cutoff.setDate(currentDate.getDate());
+                    let cutOffData = await getCutOff();
+                    console.log("cutoff");
+                    console.log(cutOffData);
+                    console.log(group[i].warehouse);
 
-                    if (group[i].warehouse === "WN-MBHI0003") {
-                        cutoff.setHours(14);
-                    } else {
-                        cutoff.setHours(15);
+                    let cutOffTime ;
+                    if (group[i].courier == "others") {
+                         cutOffTime = cutOffData[`others-${group[i].warehouse}`].split(':');
                     }
-
-                    cutoff.setMinutes(30);
+                    else{
+                        //Created ndd for three warehouse
+                        cutOffTime = cutOffData[`ndd-${group[i].warehouse}`].split(':');
+                    }
+                    console.log("cutOffTime",cutOffTime);
+                    let cuttOfHour = parseInt(cutOffTime[0]);
+                    let cuttOfMin = parseInt(cutOffTime[1]);
+                    console.log("cuttOfHour",cuttOfHour,"cuttOfMin",cuttOfMin);
+                    var cutoff = new Date();
+                    cutoff.setDate(currentDate.getDate());
+                    cutoff.setHours(cuttOfHour);    
+                    cutoff.setMinutes(cuttOfMin)
                     cutoff.setSeconds(0);
 
                     if (cutoff > currentDate) {
