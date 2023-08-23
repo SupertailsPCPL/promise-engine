@@ -169,11 +169,11 @@ async function EddMaincart(cpin, skus, qty) {
 
                     let cutOffTime ;
                     if (group[i].courier == "others") {
-                         cutOffTime = cutOffData[`others-${group[i].warehouse}`].split(':');
+                         cutOffTime = cutOffData[`others-${group[i].warehouse}`].split(':') ?? "13:00";
                     }
                     else{
                         //Created ndd for three warehouse
-                        cutOffTime = cutOffData[`ndd-${group[i].warehouse}`].split(':');
+                        cutOffTime = cutOffData[`ndd-${group[i].warehouse}`].split(':') ?? "13:00";
                     }
                     console.log("cutOffTime",cutOffTime);
                     let cuttOfHour = parseInt(cutOffTime[0]);

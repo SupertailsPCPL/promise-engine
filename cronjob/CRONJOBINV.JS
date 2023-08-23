@@ -3,23 +3,6 @@ const connectionPool = require('../dbPromiseEngine.js'); // Make sure dbpromiseE
 
 const warehouses = ["WN-MDEL0002", "WN-MBHI0003", "WN-MBLR0001", "PWH001", "WH004", "WH005", "WH006", "WH007", "WH008", "WH009", "WH010", "WH011", "WH012", "WH013", "WH014", "WH015", "WH016", "WH017", "WH018"];
 
-// runInventorySnapshotBatch111(warehouses)
-//   .then(result => {
-//     console.log('Inventory snapshot process completed:', result);
-//   })
-//   .catch(err => {
-//     console.error('Error during inventory snapshot process:', err);
-//   });
-
-
-async function runInventorySnapshotBatch111(warehouses) {
-    await runInventorySnapshotForWarehouses(warehouses);
-    return true
-}
-
-
-
-
 // Function to run the inventory snapshot process for multiple warehouses
 async function runInventorySnapshotForWarehouses(warehouseIds) {
     try {
@@ -212,7 +195,7 @@ async function processBundleItems() {
         const bundleItemMaster = await GetItemMaster(false);
         console.log(bundleItemMaster.length);
 
-        const batchSize = 100;
+        const batchSize = 400;
         let i = 0;
 
         for (let start = 0; start < bundleItemMaster.length; start += batchSize) {

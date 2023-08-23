@@ -157,83 +157,6 @@ async function processWarehouse(warehouseId, accessToken) {
   }
 }
 
-// Function to bulk insert inventory data for bundle SKUs into the database
-async function bulkInsertInventoryBundle(bundleSkuCode, inventoryData, wareHouseId) {
-  try {
-    if (Object.keys(inventoryData).length === 0) {
-      console.log(`Nothing to insert for bundle SKU: ${bundleSkuCode} in warehouse: ${wareHouseId}.`);
-      return;
-    }
-
-    // Prepare the values for bulk insertion
-    const values = Object.entries(inventoryData).map(([skuCode, quantity]) => [skuCode, quantity]);
-
-    // SQL query to perform bulk insertion or update existing records for bundle SKUs
-    const sql = `
-      INSERT INTO promiseEngine.EdditemInventory (skuCode, \`${wareHouseId}\`)
-      VALUES ? AS new_data
-      ON DUPLICATE KEY UPDATE \`${wareHouseId}\` = new_data.\`${wareHouseId}\`
-    `;
-
-    // Execute the SQL query to insert or update inventory data for bundle SKUs
-    await connectionPool.query(sql, [values]);
-
-    console.log(`Bulk insertion completed for bundle SKU: ${bundleSkuCode} in warehouse: ${wareHouseId}.`);
-  } catch (error) {
-    console.error(`Error during bulk insertion for bundle SKU: ${bundleSkuCode} in warehouse: ${wareHouseId}:`, error);
-  }
-}
-
-// Function to process inventory data for bundle SKUs
-async function processBundleItems(warehouseId, accessToken) {
-  try {
-    // Fetch the item master data from the database
-    const itemMasterData = await GetItemMaster();
-
-    // Filter out BUNDLE items from the item master data
-    const bundleItemMaster = itemMasterData.filter(item => item.Type === "BUNDLE");
-
-    // Process inventory data for each bundle SKU
-    await Promise.all(bundleItemMaster.map(async bundleItem => {
-      const componentSkusData = JSON.parse(bundleItem.componentSkusData);
-      let minAvailableQuantity = Infinity;
-      let bundleInventory = {};
-
-      // Fetch inventory data for each component SKU of the bundle
-      const componentInventoryPromises = componentSkusData.map(component => {
-        return UniCommerceApiinventory(warehouseId, [component.skuid], accessToken);
-      });
-
-      // Wait for all the inventory data to be fetched
-      const componentInventories = await Promise.all(componentInventoryPromises);
-
-      console.log(bundleItem);
-      componentInventories.forEach((componentInventory, index) => {
-        if (componentInventory && componentInventory.length > 0) {
-          const component = componentSkusData[index];
-          const componentQuantity = component.qty;
-          const componentAvailableQuantity = componentInventory[0].inventory;
-          const effectiveInventory = Math.floor(componentAvailableQuantity / componentQuantity);
-
-          if (effectiveInventory < minAvailableQuantity) {
-            minAvailableQuantity = effectiveInventory;
-            bundleInventory[bundleItem.skuId] = effectiveInventory;
-          }
-        }
-      });
-
-      if (Object.keys(bundleInventory).length > 0) {
-        // Bulk insert or update inventory data for the bundle SKU
-        await bulkInsertInventoryBundle(bundleItem.skuId, bundleInventory, warehouseId);
-      }
-    }));
-
-    return true;
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-
 // Function to run the inventory snapshot process for multiple warehouses
 async function runInventorySnapshotForWarehouses(warehouseIds) {
   try {
@@ -259,64 +182,17 @@ async function runInventorySnapshotForWarehouses(warehouseIds) {
   }
 }
 
-async function runInventorySnapshotForWarehousesbundle(warehouseIds) {
-  try {
-    // Fetch the access token from UniCommerce API
-    const accessToken = await getAccessToken();
-
-    if (!accessToken) {
-      console.error('Access token not available. Exiting inventory snapshot process.');
-      return false;
-    }
-
-    // Process each warehouse to fetch and update inventory data
-    const promises = [];
-    // promises.push(...warehouseIds.map(warehouseId => processWarehouse(warehouseId, accessToken)));
-    promises.push(...warehouseIds.map(warehouseId => processBundleItems(warehouseId, accessToken)));
-
-    await Promise.all(promises);
-
-    return true;
-  } catch (error) {
-    console.error('Error:', error);
-    return false;
-  }
-}
-
-
 // // List of warehouses for inventory snapshot process
 const warehouses = ["WN-MDEL0002", "WN-MBHI0003", "WN-MBLR0001", "PWH001", "WH004", "WH005",  "WH006", "WH007", "WH008", "WH009", "WH010", "WH011", "WH012", "WH013", "WH014", "WH015", "WH016", "WH017", "WH018"];
 // List of warehouses for inventory snapshot process
+// const warehouses = ["WH011", "WH010"];
 
-async function runInventorySnapshotBatch(warehouseBatch) {
-  try {
-    const result = await runInventorySnapshotForWarehousesbundle(warehouseBatch);
-    console.log('Inventory snapshot process completed for 1 batch:', result);
-  } catch (err) {
-    console.error('Error during inventory snapshot process for 1 batch:', err);
-  }
-}
-
-// Batch size for splitting warehouses
-const batchSize = 2;
-
-async function runInventorySnapshotBatch111() {
-
-// Split the warehouses into batches
-console.log("warehouses.length");
-console.log(warehouses.length);
-for (let i = 0; i < warehouses.length; i += batchSize) {
-  const warehouseBatch = warehouses.slice(i, i + batchSize);
-  await runInventorySnapshotBatch(warehouseBatch);
-}
-  await runInventorySnapshotForWarehouses();
-  return true
-}
-
-runInventorySnapshotBatch111(warehouses)
+// Start the inventory snapshot process for the specified warehouses
+runInventorySnapshotForWarehouses(warehouses)
   .then(result => {
     console.log('Inventory snapshot process completed:', result);
   })
   .catch(err => {
     console.error('Error during inventory snapshot process:', err);
   });
+

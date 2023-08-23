@@ -215,11 +215,14 @@ async function otherEDD(cpin, eddResponse) {
         console.log(eddResponse.warehouse);
         let cutOffTime ;
         if (eddResponse.courier == "others") {
-             cutOffTime = cutOffData[`others-${eddResponse.warehouse}`].split(':');
-        }
+            console.log(cutOffData);
+             cutOffTime = cutOffData[`others-${eddResponse.warehouse}`]?.split(':') ?? "13:00";
+                console.log("cutOffTime Aj");
+                console.log(cutOffTime);
+            }
         else{
             //Created ndd for three warehouse
-            cutOffTime = cutOffData[`ndd-${eddResponse.warehouse}`].split(':');
+            cutOffTime = cutOffData[`ndd-${eddResponse.warehouse}`].split(':') ?? "13:00";
         }
         console.log("cutOffTime",cutOffTime);
         let cuttOfHour = parseInt(cutOffTime[0]);
