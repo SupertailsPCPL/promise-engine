@@ -291,9 +291,9 @@ const warehouses = ["WN-MDEL0002", "WN-MBHI0003", "WN-MBLR0001", "PWH001", "WH00
 async function runInventorySnapshotBatch(warehouseBatch) {
   try {
     const result = await runInventorySnapshotForWarehousesbundle(warehouseBatch);
-    console.log('Inventory snapshot process completed for batch:', result);
+    console.log('Inventory snapshot process completed for 1 batch:', result);
   } catch (err) {
-    console.error('Error during inventory snapshot process for batch:', err);
+    console.error('Error during inventory snapshot process for 1 batch:', err);
   }
 }
 
@@ -303,9 +303,20 @@ const batchSize = 2;
 async function runInventorySnapshotBatch111() {
 
 // Split the warehouses into batches
+console.log("warehouses.length");
+console.log(warehouses.length);
 for (let i = 0; i < warehouses.length; i += batchSize) {
   const warehouseBatch = warehouses.slice(i, i + batchSize);
   await runInventorySnapshotBatch(warehouseBatch);
 }
+  await runInventorySnapshotForWarehouses();
+  return true
 }
-runInventorySnapshotBatch111()
+
+runInventorySnapshotBatch111(warehouses)
+  .then(result => {
+    console.log('Inventory snapshot process completed:', result);
+  })
+  .catch(err => {
+    console.error('Error during inventory snapshot process:', err);
+  });
