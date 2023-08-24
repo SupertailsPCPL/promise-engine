@@ -155,6 +155,7 @@ async function EddMaincart(cpin, skus, qty) {
                     let wh = group[i].warehouse;
                     const courierData = await otherEDD.getCourier(group[i].cpin, whGroups[warehouseId].wt); // group[i].warehouse not required
                     let daycount = parseInt(courierData[`${wh}`]) + parseInt(group[i].SBD) + parseInt(group[i].DBD);
+                    group[i].EDD = parseInt(courierData[`${wh}`]);
                     console.log("EDD Daataa");
                     console.log(group[i].SBD);
                     console.log(courierData[`${wh}`]); 
