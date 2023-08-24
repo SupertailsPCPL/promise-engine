@@ -25,7 +25,7 @@ app.use(cors({
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 
-app.use("/cronjob",EDD);
+app.use("/cronjob",CronJob);
 app.use("/",EDD);
 
 

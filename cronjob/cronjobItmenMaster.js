@@ -53,6 +53,7 @@ const convertCsvToJson = async () => {
             // Perform bulk insert for faster database insert
             await bulkInsertToTable(consolidatedData);
             console.log('All data inserted successfully');
+            return true
           })
           .catch((error) => {
             console.error('Error converting CSV to JSON:', error);

@@ -7,7 +7,7 @@ const router = require("express").Router();
 
 const simpleInvCron  = require("./cronjobItemInv.js");
 const bundleInvCron  = require("./cronjobItemInv.js");
-const itemMasterCron  = require("./cronjobItemInv.js");
+const itemMasterCron  = require("./cronjobItmenMaster.js");
 
 
 router.get("/inventory", async (req, res, next) => {
@@ -29,7 +29,7 @@ router.get("/inventory", async (req, res, next) => {
     let qty = req?.query?.qty ?? 1;
     console.log(cpin,skus,qty);
 
-    let funcRes = await simpleInvCron();
+    let funcRes = await itemMasterCron();
     return res.status(200).json({
       message: "getEdd successfully returned",
       response: funcRes
