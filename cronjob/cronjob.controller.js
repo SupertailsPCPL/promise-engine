@@ -6,32 +6,27 @@ const router = require("express").Router();
 //PATH = '/getEdd'
 
 const simpleInvCron  = require("./cronjobItemInv.js");
-const bundleInvCron  = require("./cronjobItemInv.js");
+const bundleInvCron  = require("./cronjobBundle.js");
 const itemMasterCron  = require("./cronjobItmenMaster.js");
 
 
 router.get("/inventory", async (req, res, next) => {
-    let cpin = req?.query?.cpin ?? false;
-    let skus = req?.query?.skuid ?? false;
-
-    let funcRes = await EddFunctions.EddMain(cpin,skus,qty);
-
+  console.log("simple cron started",Date());  
+  let funcRes = await simpleInvCron();
+  console.log("simple cron ended",Date());  
+  console.log("bunde cron ended",Date());  
+  let bundleInv = await bundleInvCron();
+  console.log("bunde cron ended",Date());  
     return res.status(200).json({
-      message: "getEdd successfully returned",
+      message: "itemInv cronjob successfully completed",
       response: funcRes
     }); 
   });
 
   router.get("/itemMaster", async (req, res, next) => {
-   
-    let cpin = req?.query?.cpin ?? false;
-    let skus = req?.query?.skuid ?? false;
-    let qty = req?.query?.qty ?? 1;
-    console.log(cpin,skus,qty);
-
     let funcRes = await itemMasterCron();
     return res.status(200).json({
-      message: "getEdd successfully returned",
+      message: "itemMaster cronjob successfully completed",
       response: funcRes
     }); 
   });

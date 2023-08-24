@@ -102,7 +102,7 @@ async function UniCommerceApiinventory(wareHouseId, skuid, accessToken) {
 async function bulkInsertInventory(inventoryData, wareHouseId) {
   try {
     if (!inventoryData || inventoryData.length === 0) {
-      console.log(`Nothing to insert for warehouse: ${wareHouseId}.`);
+      // console.log(`Nothing to insert for warehouse: ${wareHouseId}.`);
       return;
     }
 
@@ -122,7 +122,7 @@ async function bulkInsertInventory(inventoryData, wareHouseId) {
     // Execute the SQL query to insert or update inventory data
     await connectionPool.query(sql, [values]);
 
-    console.log(`Bulk insertion completed for warehouse: ${wareHouseId}.`);
+    // console.log(`Bulk insertion completed for warehouse: ${wareHouseId}.`);
   } catch (error) {
     console.error(`Error during bulk insertion for warehouse: ${wareHouseId}:`, error);
   }
@@ -144,7 +144,7 @@ async function processWarehouse(warehouseId, accessToken) {
       const batch = simpleItemMaster.slice(i, i + batchSize);
       const skuIdsbatch = batch.flatMap(item => item?.skuId);
 
-      console.log(`Processing batch ${i} for warehouse: ${warehouseId}, batch size: ${batch.length}`);
+      // console.log(`Processing batch ${i} for warehouse: ${warehouseId}, batch size: ${batch.length}`);
 
       // Fetch inventory data from UniCommerce API for the batch of SKUs
       const inventorySnapshots = await UniCommerceApiinventory(warehouseId, skuIdsbatch, accessToken);

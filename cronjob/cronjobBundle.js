@@ -65,12 +65,10 @@ async function UniCommerceApiinventory(wareHouseId, skuid, accessToken) {
         return false;
     }
 }
-
-
 // Function to process inventory data for bundle SKUs
 async function processBundleItems() {
     try {
-        // console.log("IAM INNNN");
+        console.log("IAM INNNN");
         // Fetch the item master data from the database
         const bundleItemMaster = await GetItemMaster(false);
         const batchSize = 2000;
@@ -120,7 +118,7 @@ async function processBundleItems() {
                     // console.log("outputInv");
                     // console.log(outputInv);
                 } else {
-                    console.log("error", bundleItem);
+                    // console.log("error", bundleItem);
                     i++;
                 }
             }
