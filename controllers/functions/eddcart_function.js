@@ -148,10 +148,10 @@ async function EddMaincart(cpin, skus, qty) {
                 const group = whGroups[warehouseId].group;
                 for (let i = 0; i < group.length; i++) {
                     const currentDate = new Date();
-                    currentDate.setHours(currentDate.getHours());
-                    currentDate.setMinutes(currentDate.getMinutes());
-                    //currentDate.setHours(currentDate.getHours() + 5);
-                    //currentDate.setMinutes(currentDate.getMinutes() + 30);
+                    // currentDate.setHours(currentDate.getHours());
+                    // currentDate.setMinutes(currentDate.getMinutes());
+                    currentDate.setHours(currentDate.getHours() + 5);
+                    currentDate.setMinutes(currentDate.getMinutes() + 30);
                     let wh = group[i].warehouse;
                     const courierData = await otherEDD.getCourier(group[i].cpin, whGroups[warehouseId].wt); // group[i].warehouse not required
                     let daycount = parseInt(courierData[`${wh}`]) + parseInt(group[i].SBD) + parseInt(group[i].DBD);
