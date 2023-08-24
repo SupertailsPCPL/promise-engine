@@ -204,10 +204,10 @@ async function otherEDD(cpin, eddResponse) {
         console.log("total");
 
         var currentDate = new Date();
-        currentDate.setHours(currentDate.getHours());
-        currentDate.setMinutes(currentDate.getMinutes());
-        // currentDate.setHours(currentDate.getHours() + 5);
-        // currentDate.setMinutes(currentDate.getMinutes() + 30);
+        // currentDate.setHours(currentDate.getHours());
+        // currentDate.setMinutes(currentDate.getMinutes());
+        currentDate.setHours(currentDate.getHours() + 5);
+        currentDate.setMinutes(currentDate.getMinutes() + 30);
 
         let cutOffData = await getCutOff();
         console.log("cutoff");
