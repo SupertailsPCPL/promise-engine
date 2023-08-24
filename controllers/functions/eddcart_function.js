@@ -12,8 +12,7 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 //Sample data
-EddMaincart(560077, "CFODF0010DR", '2');
-//this is the start point of eddcart - Main Function
+EddMaincart(560005, "DPCTF0009SAVPH", '1');//this is the start point of eddcart - Main Function
 async function EddMaincart(cpin, skus, qty) {
     try {
         if (!skus) {
@@ -169,11 +168,10 @@ async function EddMaincart(cpin, skus, qty) {
 
                     let cutOffTime ;
                     if (group[i].courier == "others") {
-                         cutOffTime = cutOffData[`others-${group[i].warehouse}`].split(':') ?? "13:00";
+                         cutOffTime = cutOffData[`others-${group[i].warehouse}`]?.split(':') ?? [13,0];
                     }
                     else{
-                        //Created ndd for three warehouse
-                        cutOffTime = cutOffData[`ndd-${group[i].warehouse}`].split(':') ?? "13:00";
+                        cutOffTime = cutOffData[`ndd-${group[i].warehouse}`]?.split(':') ?? [13,0];
                     }
                     console.log("cutOffTime",cutOffTime);
                     let cuttOfHour = parseInt(cutOffTime[0]);
@@ -184,7 +182,7 @@ async function EddMaincart(cpin, skus, qty) {
                     cutoff.setHours(cuttOfHour);    
                     cutoff.setMinutes(cuttOfMin)
                     cutoff.setSeconds(0);
-
+                    console.log("final cutt of time",cutoff);
                     if (cutoff > currentDate) {
                         daycount = daycount;
                     }
@@ -208,6 +206,7 @@ async function EddMaincart(cpin, skus, qty) {
         }
     }
     catch (e) {
+        console.log(e);
         return ({
             "skuId": skus,
             "responseCode": "499",

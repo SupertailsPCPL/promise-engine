@@ -89,4 +89,5 @@ const bulkInsertToTable = async (data) => {
   }
 };
 
-convertCsvToJson();
+module.exports = convertCsvToJson;
+

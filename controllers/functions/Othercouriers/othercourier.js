@@ -206,8 +206,8 @@ async function otherEDD(cpin, eddResponse) {
         var currentDate = new Date();
         currentDate.setHours(currentDate.getHours());
         currentDate.setMinutes(currentDate.getMinutes());
-        //currentDate.setHours(currentDate.getHours() + 5);
-        //currentDate.setMinutes(currentDate.getMinutes() + 30);
+        // currentDate.setHours(currentDate.getHours() + 5);
+        // currentDate.setMinutes(currentDate.getMinutes() + 30);
 
         let cutOffData = await getCutOff();
         console.log("cutoff");
@@ -216,13 +216,13 @@ async function otherEDD(cpin, eddResponse) {
         let cutOffTime ;
         if (eddResponse.courier == "others") {
             console.log(cutOffData);
-             cutOffTime = cutOffData[`others-${eddResponse.warehouse}`]?.split(':') ?? "13:00";
+             cutOffTime = cutOffData[`others-${eddResponse.warehouse}`]?.split(':') ?? [13,0];
                 console.log("cutOffTime Aj");
                 console.log(cutOffTime);
             }
         else{
             //Created ndd for three warehouse
-            cutOffTime = cutOffData[`ndd-${eddResponse.warehouse}`].split(':') ?? "13:00";
+            cutOffTime = cutOffData[`ndd-${eddResponse.warehouse}`]?.split(':') ?? [13,0];
         }
         console.log("cutOffTime",cutOffTime);
         let cuttOfHour = parseInt(cutOffTime[0]);

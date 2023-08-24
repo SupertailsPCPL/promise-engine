@@ -158,7 +158,7 @@ async function processWarehouse(warehouseId, accessToken) {
 }
 
 // Function to run the inventory snapshot process for multiple warehouses
-async function runInventorySnapshotForWarehouses(warehouseIds) {
+async function runInventorySnapshotForWarehouses() {
   try {
     // Fetch the access token from UniCommerce API
     const accessToken = await getAccessToken();
@@ -170,7 +170,7 @@ async function runInventorySnapshotForWarehouses(warehouseIds) {
 
     // Process each warehouse to fetch and update inventory data
     const promises = [];
-    promises.push(...warehouseIds.map(warehouseId => processWarehouse(warehouseId, accessToken)));
+    promises.push(...warehouses.map(warehouseId => processWarehouse(warehouseId, accessToken)));
     // promises.push(...warehouseIds.map(warehouseId => processBundleItems(warehouseId, accessToken)));
 
     await Promise.all(promises);
@@ -185,14 +185,6 @@ async function runInventorySnapshotForWarehouses(warehouseIds) {
 // // List of warehouses for inventory snapshot process
 const warehouses = ["WN-MDEL0002", "WN-MBHI0003", "WN-MBLR0001", "PWH001", "WH004", "WH005",  "WH006", "WH007", "WH008", "WH009", "WH010", "WH011", "WH012", "WH013", "WH014", "WH015", "WH016", "WH017", "WH018"];
 // List of warehouses for inventory snapshot process
-// const warehouses = ["WH011", "WH010"];
 
-// Start the inventory snapshot process for the specified warehouses
-runInventorySnapshotForWarehouses(warehouses)
-  .then(result => {
-    console.log('Inventory snapshot process completed:', result);
-  })
-  .catch(err => {
-    console.error('Error during inventory snapshot process:', err);
-  });
 
+  module.exports = runInventorySnapshotForWarehouses;;

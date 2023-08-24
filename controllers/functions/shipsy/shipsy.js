@@ -154,7 +154,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     // console.log("cutoff aj");
     // console.log(cutOffData);
     // console.log(eddResponse.warehouse);
-    let cutOffTime = cutOffData[`shipsy-${eddResponse.warehouse}`].split(':') ?? "13:00";
+    let cutOffTime = cutOffData[`shipsy-${eddResponse.warehouse}`].split(':') ?? [13,0];
     // console.log("cutOffTime",cutOffTime);
     let cuttOfHour = parseInt(cutOffTime[0]);
     let cuttOfMin = parseInt(cutOffTime[1]);

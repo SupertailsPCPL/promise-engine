@@ -10,6 +10,7 @@ const app = express();
 
 //REGISTER ALL THE CONTROLLERS AND MIDDLEWARE BELOW
 const EDD  = require("./controllers/Edd.controller.js");
+const CronJob  = require("./cronjob/cronjob.controller.js");
 
 //IMPORT AND REGISTER THE EXPRESS APPLICATION 
 //INJECT DATABASE CODE
@@ -24,6 +25,7 @@ app.use(cors({
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 
+app.use("/cronjob",EDD);
 app.use("/",EDD);
 
 
