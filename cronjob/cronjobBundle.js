@@ -7,7 +7,8 @@ async function GetItemMaster(isSimple) {
         try {
             // Use the connection pool to execute a query to fetch the item master data
             connectionPool.query(
-                `Select * from EDDItemMaster where Type = "${isSimple ? "SIMPLE" : "BUNDLE"}"`,
+                `SELECT * FROM promiseEngine.EDDItemMaster where skuId = "CFODF0062ST";`,
+                // `Select * from EDDItemMaster where Type = "${isSimple ? "SIMPLE" : "BUNDLE"}"`,
                 function (error, Logsresults, fields) {
                     if (error) {
                         console.log(error);
@@ -25,46 +26,6 @@ async function GetItemMaster(isSimple) {
 }
 
 
-
-// Function to make the UniCommerce API request to fetch inventory data
-async function UniCommerceApiinventory(wareHouseId, skuid, accessToken) {
-    try {
-        const options = {
-            url: 'https://warehousenow.unicommerce.com/services/rest/v1/inventory/inventorySnapshot/get',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Facility': wareHouseId,
-                'Authorization': `bearer ${accessToken}`
-            },
-            body: JSON.stringify({
-                "itemTypeSKUs": skuid
-            })
-        };
-
-        // Making a POST request to the UniCommerce API to fetch inventory data
-        const response = await new Promise((resolve, reject) => {
-            request(options, function (error, response, body) {
-                if (error) {
-                    console.error(error);
-                    resolve(false);
-                } else {
-                    const data = JSON.parse(body);
-                    if (data.successful === true) {
-                        resolve(data.inventorySnapshots); // Return the inventory data
-                    } else {
-                        resolve(false);
-                    }
-                }
-            });
-        });
-
-        return response;
-    } catch (error) {
-        console.error(error);
-        return false;
-    }
-}
 // Function to process inventory data for bundle SKUs
 async function processBundleItems() {
     try {
@@ -88,7 +49,7 @@ async function processBundleItems() {
             for (let j = 0; j < batchItems.length; j++) {
                 const bundleItem = batchItems[j];
                 const invData = invDataArray[j];
-
+                    console.log(bundleItem);
                 if (invData.length > 0) {
                     const componentSkusData = JSON.parse(bundleItem.componentSkusData);
                     const skuIds = componentSkusData.map(item => item.skuid);
@@ -96,23 +57,27 @@ async function processBundleItems() {
                         map[skuData.skuid] = skuData.qty;
                         return map;
                     }, {});
-    
+                    console.log(invData);
+
                     const outputInv = invData.reduce((output, data) => {
                         const skuCode = data.skuCode;
                         const qtyToUpdate = qtyMap[skuCode];
-    
+
                         if (qtyToUpdate) {
                             for (const key in data) {
                                 if (key !== 'skuCode' && data[key] !== null) {
-                                    output[key] = Math.floor(data[key] / qtyToUpdate);
+                                    // Calculate the minimum value for each key
+                                    output[key] = output[key] === undefined
+                                        ? Math.floor(data[key] / qtyToUpdate)
+                                        : Math.min(output[key], Math.floor(data[key] / qtyToUpdate));
                                 }
                             }
                         }
-    
                         return output;
                     }, {});
-    
                     outputInv.skuCode = bundleItem.skuId;
+                    console.log("outputInv");
+                    console.log(outputInv);
                     await insertOrUpdateInventory(outputInv);
                     // console.log(bundleItem);
                     // console.log("outputInv");
@@ -154,31 +119,31 @@ async function GetItemInv(skus) {
         }
     });
 }
-    
-    async function insertOrUpdateInventory(inventoryObject) {
-        const skuCode = inventoryObject.skuCode;
-        delete inventoryObject.skuCode;
-      
-        // Convert 'null' string values to actual null values
-        for (const key in inventoryObject) {
-          if (inventoryObject[key] === 'null') {
+
+async function insertOrUpdateInventory(inventoryObject) {
+    const skuCode = inventoryObject.skuCode;
+    delete inventoryObject.skuCode;
+
+    // Convert 'null' string values to actual null values
+    for (const key in inventoryObject) {
+        if (inventoryObject[key] === 'null') {
             inventoryObject[key] = null;
-          }
         }
-      
-        const columns = Object.keys(inventoryObject);
-        const values = Object.values(inventoryObject);
-      
-        const insertColumns = [...columns, 'skuCode'].map(col => `\`${col}\``).join(', ');
-        const insertValues = [...values, skuCode].map(val => (val === null ? 'null' : `'${val}'`)).join(', ');
-      
-        const updateStatements = columns
+    }
+
+    const columns = Object.keys(inventoryObject);
+    const values = Object.values(inventoryObject);
+
+    const insertColumns = [...columns, 'skuCode'].map(col => `\`${col}\``).join(', ');
+    const insertValues = [...values, skuCode].map(val => (val === null ? 'null' : `'${val}'`)).join(', ');
+
+    const updateStatements = columns
         .filter(col => col !== 'skuCode') // Exclude skuCode from updates
         .map(col => `\`${col}\` = VALUES(\`${col}\`)`)
         .join(', ');
-      
-      
-        const query = `
+
+
+    const query = `
           INSERT INTO \`promiseEngine\`.\`EdditemInventory\`
             (${insertColumns})
           VALUES
@@ -186,21 +151,21 @@ async function GetItemInv(skus) {
           ON DUPLICATE KEY UPDATE
             ${updateStatements};
         `;
-      
-        return new Promise((resolve, reject) => {
-            connectionPool.query(query, function (error, results, fields) {
+
+    return new Promise((resolve, reject) => {
+        connectionPool.query(query, function (error, results, fields) {
             if (error) {
-              console.log(error);
-              reject(error);
+                console.log(error);
+                reject(error);
             } else {
-              resolve(results);
+                resolve(results);
             }
-          });
         });
-      }
-      
+    });
+}
 
 
 
 
-      module.exports = processBundleItems;
+
+module.exports = processBundleItems;
