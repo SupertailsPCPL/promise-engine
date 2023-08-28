@@ -13,13 +13,30 @@ router.get("/edd", async (req, res, next) => {
     let cpin = req?.query?.cpin ?? false;
     let skus = req?.query?.skuid ?? false;
     let qty = req?.query?.qty ?? 1;
-    console.log(cpin,skus,qty);
+    let showcompletedata = req?.query?.showcompletedata ?? false;
+    console.log(cpin,skus,qty,showcompletedata);
 
     let funcRes = await EddFunctions.EddMain(cpin,skus,qty);
+    let  extractedData = funcRes.reduce((result, item) => {
+      result.push({
+        skuId: item.skuId,
+        qty: item.qty,
+        state: item.state,
+        city: item.city,
+        warehouse: item.warehouse,
+        imageLike: item.imageLike,
+        deliveryDate: item.deliveryDate,
+        deliveryDay: item.deliveryDay,
+        dayCount: item.dayCount,
+      });
+      return result;
+    }, []);
+
+    let responseToSend = showcompletedata ? funcRes : extractedData;
 
     return res.status(200).json({
       message: "getEdd successfully returned",
-      response: funcRes
+      response: responseToSend
     }); 
   });
 
@@ -28,12 +45,30 @@ router.get("/edd", async (req, res, next) => {
     let cpin = req?.query?.cpin ?? false;
     let skus = req?.query?.skuid ?? false;
     let qty = req?.query?.qty ?? 1;
-    console.log(cpin,skus,qty);
+    let showcompletedata = req?.query?.showcompletedata ?? false;
+    console.log(cpin,skus,qty,showcompletedata);
 
     let funcRes = await CartEddFunctions.EddMaincart(cpin,skus,qty);
+    let  extractedData = funcRes.reduce((result, item) => {
+      result.push({
+        skuId: item.skuId,
+        qty: item.qty,
+        state: item.state,
+        city: item.city,
+        warehouse: item.warehouse,
+        imageLike: item.imageLike,
+        deliveryDate: item.deliveryDate,
+        deliveryDay: item.deliveryDay,
+        dayCount: item.dayCount,
+      });
+      return result;
+    }, []);
+  
+    let responseToSend = showcompletedata ? funcRes : extractedData;
+
     return res.status(200).json({
       message: "getEdd successfully returned",
-      response: funcRes
+      response: responseToSend
     }); 
   });
 
