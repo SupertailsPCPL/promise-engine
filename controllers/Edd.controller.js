@@ -9,15 +9,15 @@ const CartEddFunctions = require("./functions/eddcart_function");
 //PATH = '/getEdd'
 
 router.get("/edd", async (req, res, next) => {
-   
+  try {
     let cpin = req?.query?.cpin ?? false;
     let skus = req?.query?.skuid ?? false;
     let qty = req?.query?.qty ?? 1;
     let showcompletedata = req?.query?.showcompletedata ?? false;
-    console.log(cpin,skus,qty,showcompletedata);
+    console.log(cpin, skus, qty, showcompletedata);
 
-    let funcRes = await EddFunctions.EddMain(cpin,skus,qty);
-    let  extractedData = funcRes.reduce((result, item) => {
+    let funcRes = await EddFunctions.EddMain(cpin, skus, qty);
+    let extractedData = funcRes.reduce((result, item) => {
       result.push({
         skuId: item.skuId,
         qty: item.qty,
@@ -34,22 +34,25 @@ router.get("/edd", async (req, res, next) => {
 
     let responseToSend = showcompletedata ? funcRes : extractedData;
 
-    return res.status(200).json({
-      message: "getEdd successfully returned",
-      response: responseToSend
-    }); 
-  });
+    return res.status(200).json(responseToSend);
+  } catch (error) {
+    console.error("Error in /edd route:", error);
+    return res.status(500).json({
+      message: "Error"
+    });
+  }
+});
 
-  router.get("/cartedd", async (req, res, next) => {
-   
+router.get("/cartedd", async (req, res, next) => {
+  try {
     let cpin = req?.query?.cpin ?? false;
     let skus = req?.query?.skuid ?? false;
     let qty = req?.query?.qty ?? 1;
     let showcompletedata = req?.query?.showcompletedata ?? false;
-    console.log(cpin,skus,qty,showcompletedata);
+    console.log(cpin, skus, qty, showcompletedata);
 
-    let funcRes = await CartEddFunctions.EddMaincart(cpin,skus,qty);
-    let  extractedData = funcRes.reduce((result, item) => {
+    let funcRes = await CartEddFunctions.EddMaincart(cpin, skus, qty);
+    let extractedData = funcRes.reduce((result, item) => {
       result.push({
         skuId: item.skuId,
         qty: item.qty,
@@ -63,18 +66,19 @@ router.get("/edd", async (req, res, next) => {
       });
       return result;
     }, []);
-  
+
     let responseToSend = showcompletedata ? funcRes : extractedData;
+    return res.status(200).json(responseToSend);
+  } catch (error) {
+    console.error("Error in /cartedd route:", error);
+    return res.status(500).json({
+      message: "Error"
+    });
+  }
+});
 
-    return res.status(200).json({
-      message: "getEdd successfully returned",
-      response: responseToSend
-    }); 
-  });
-
-router.get('/',(req,res)=>{
-    res.send("Welcome To Promise Engine Backend")
+router.get('/', (req, res) => {
+  res.send("Welcome To Promise Engine Backend")
 })
-  
-  module.exports = router;
-  
+
+module.exports = router;
