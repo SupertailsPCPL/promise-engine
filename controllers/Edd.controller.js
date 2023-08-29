@@ -27,6 +27,9 @@ router.get("/edd", async (req, res, next) => {
         imageLike: item.imageLike,
         deliveryDate: item.deliveryDate,
         deliveryDay: item.deliveryDay,
+        currentDate: item.currentDate,
+        cutoff: item.cutoff,
+        timeLeftInMinutes: item.timeLeftInMinutes,
         dayCount: item.dayCount,
       });
       return result;
@@ -62,6 +65,9 @@ router.get("/cartedd", async (req, res, next) => {
         imageLike: item.imageLike,
         deliveryDate: item.deliveryDate,
         deliveryDay: item.deliveryDay,
+        currentDate: item.currentDate,
+        cutoff: item.cutoff,
+        timeLeftInMinutes: item.timeLeftInMinutes,
         dayCount: item.dayCount,
       });
       return result;
