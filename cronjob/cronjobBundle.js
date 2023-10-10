@@ -7,7 +7,7 @@ async function GetItemMaster(isSimple) {
         try {
             // Use the connection pool to execute a query to fetch the item master data
             connectionPool.query(
-                `SELECT * FROM promiseEngine.EDDItemMaster where skuId = "CFODF0062ST";`,
+                `SELECT * FROM promiseEngine.EDDItemMaster;`,
                 // `Select * from EDDItemMaster where Type = "${isSimple ? "SIMPLE" : "BUNDLE"}"`,
                 function (error, Logsresults, fields) {
                     if (error) {

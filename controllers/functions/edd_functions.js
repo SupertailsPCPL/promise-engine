@@ -2,14 +2,15 @@ const GetInventory = require("./Inventory/inventory.js");
 const otherEDD = require("./Othercouriers/othercourier.js");
 const Shipsy = require('./shipsy/shipsy.js');
 //const dropShipEDD = require('./DropshipEdd/dropship.js');
+const connection = require('../../dbPromiseEngine')
 
-module.exports = { EddMain,getEdd }
+module.exports = { EddMain, getEdd,getCityStateFromPinCode }
 
 //Sample data
 //this is the start point of edd - Main Function
-async function EddMain(cpin,skus,qty){
-    try{    
-        if(!skus){
+async function EddMain(cpin, skus, qty) {
+    try {
+        if (!skus) {
             return ({
                 "skuId": "No-Sku-Given",
                 "responseCode": "402",
@@ -17,17 +18,17 @@ async function EddMain(cpin,skus,qty){
                 "errorDiscription": "SERVER ERROR"
             })
         }
-        if(!cpin){
+        if (!cpin) {
             return ({
-                "sku":skus,
+                "sku": skus,
                 "responseCode": "401",
                 "errorDiscription": "Pincode field cannot be blank",
                 "error": "Enter a Cpin"
             })
         }
-       
+
         let skuArray = skus.split(',');
-        
+
 
         const value = await Promise.all(skuArray.map(
             skuId => getEdd(cpin, skuId, qty),
@@ -35,9 +36,9 @@ async function EddMain(cpin,skus,qty){
             return (values);
         });
         return value;
-       
+
     }
-    catch(e){
+    catch (e) {
         return ({
             "skuId": skus,
             "responseCode": "499",
@@ -51,61 +52,88 @@ async function EddMain(cpin,skus,qty){
 
 
 //calc edd
-async function getEdd(cpin,skuId,qty){
+async function getEdd(cpin, skuId, qty) {
     return new Promise(async (resolve, reject) => {
-        try{
-        let eddResponse;
-        eddResponse={...eddResponse,"cpin":cpin,"skuId":skuId,"qty":qty};
-        console.log(eddResponse.skuId);
-        console.log("GetInventory");
-        console.log(Date());
-        let inventoryDetails =  await GetInventory(eddResponse.skuId);
-        console.log("GetInventory completed");
-        console.log(Date());        
+        try {
+            let eddResponse;
+            eddResponse = { ...eddResponse, "cpin": cpin, "skuId": skuId, "qty": qty };
+            console.log(eddResponse.skuId);
+            console.log("GetInventory");
+            console.log(Date());
+            let inventoryDetails = await GetInventory(eddResponse.skuId);
+            console.log("GetInventory completed");
+            console.log(Date());
             console.log("aksskakskaa");
             console.log(inventoryDetails);
 
-        if(inventoryDetails){
-            eddResponse = {
+            if (inventoryDetails) {
+                eddResponse = {
                     ...eddResponse,
                     ...inventoryDetails,
-                    "skuWt":qty * inventoryDetails.weight
+                    "skuWt": qty * inventoryDetails.weight
                 };
-                
+
             }
             else {
-                    return ({
-                        "skuid": skuId,
-                        "responseCode": "402",
-                        "errorDiscription": "Product Not Found",
-                        "error": "SkuId not Found"
-                    });
-                }
-                console.log("check for shipsy city");
-                console.log(Date());
-                let shipsy = await Shipsy.getIsAvailableInShipcity(cpin);
-                console.log("check for shipsy city completed");
-                console.log(Date());
-                if (shipsy!==false) {
-                    console.log("going with shipsy ");
-                    const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);
-                    resolve(b);
-                    }
-                    // else if(eddResponse.skuId.includes('DS')){
-                    //     console.log("going with dropShip");
-                    //     const b = await dropShipEDD(cpin, eddResponse);
-                    //     return b;
-                    // }
-                    else {
-                        console.log("going with other courier ");
-                        const b = await otherEDD.otherEDD(cpin, eddResponse);
-                        resolve(b);
-                    }
-                
-                
-        }catch(e){
+                resolve ({
+                    "skuid": skuId,
+                    "responseCode": "402",
+                    "errorDiscription": "Product Not Found",
+                    "error": "SkuId not Found"
+                });
+            }
+            console.log("check for shipsy city");
+            console.log(Date());
+            let shipsy = await Shipsy.getIsAvailableInShipcity(cpin);
+            console.log("check for shipsy city completed");
+            console.log(Date());
+            if (shipsy !== false) {
+                console.log("going with shipsy ");
+                const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);
+                resolve(b);
+            }
+            // else if(eddResponse.skuId.includes('DS')){
+            //     console.log("going with dropShip");
+            //     const b = await dropShipEDD(cpin, eddResponse);
+            //     return b;
+            // }
+            else {
+                console.log("going with other courier ");
+                const b = await otherEDD.otherEDD(cpin, eddResponse);
+                resolve(b);
+            }
+
+
+        } catch (e) {
             console.log(e);
         }
-       });  
-    }
+    });
+}
 
+
+
+
+async function getCityStateFromPinCode(pincode) {
+    let promise = new Promise((resolve, reject) => {
+        try {
+            let query = `SELECT * FROM promiseEngine.cpinData where cPin = ${pincode}`;
+            connection.query(
+                query,
+                async function (error, pincoderesults) {
+                    if (error) {
+                        resolve(false); 
+                    }
+                    if (pincoderesults) {
+                        var data = JSON.parse(JSON.stringify(pincoderesults));
+                        resolve(data);
+                    } else {
+                        resolve(false);
+                    }
+                });
+        }
+        catch (e) {
+            resolve(false);
+        }
+    });
+    return await promise;
+}

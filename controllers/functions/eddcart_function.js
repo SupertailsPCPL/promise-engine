@@ -225,6 +225,7 @@ async function getEdd(cpin, skuId, qty) {
             let eddResponse;
             eddResponse = { ...eddResponse, "cpin": cpin, "skuId": skuId, "qty": qty };
             let inventoryDetails = await GetInventory(eddResponse.skuId);
+            console.log("sad kadks ka kakk skasdk");
             if (inventoryDetails) {
                 eddResponse = {
                     ...eddResponse,
@@ -234,7 +235,7 @@ async function getEdd(cpin, skuId, qty) {
 
             }
             else {
-                return ({
+                resolve ({
                     "skuid": skuId,
                     "responseCode": "402",
                     "errorDiscription": "Product Not Found",

@@ -6,7 +6,7 @@ const getCutOff = require('../CutOff/cutoOff.js');
 const getcPinData = require('../Cpindata/cpindata')
 const utils = require("../Util/utils")
 const otherEDD = require("../Othercouriers/othercourier.js");
-const GetInventory = require("../Inventory/inventory.js");
+
 
 
 
