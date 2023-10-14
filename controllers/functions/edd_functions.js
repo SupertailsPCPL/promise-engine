@@ -87,7 +87,7 @@ async function getEdd(cpin, skuId, qty) {
             let shipsy = await Shipsy.getIsAvailableInShipcity(cpin);
             console.log("check for shipsy city completed");
             console.log(Date());
-            if (shipsy !== false) {
+            if (shipsy !== false && qty * parseFloat(eddResponse.skuWt) <= 20) {
                 console.log("going with shipsy ");
                 const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);
                 resolve(b);

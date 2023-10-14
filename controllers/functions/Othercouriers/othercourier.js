@@ -5,6 +5,7 @@ const getDBD = require('../Bufferdays/dbd');
 const getcPinData = require('../Cpindata/cpindata');
 const utils = require("../Util/utils")
 const getIsAvailableInNDD = require("../NDD/ndd.js")
+const GetLBD = require("../LBD/LBD.js")
 const getCutOff = require('../CutOff/cutoOff.js');
 
 module.exports = { otherEDD, getCourier };
@@ -71,13 +72,13 @@ async function getWareHousePriority(state) {
 }
 
 
-
 async function otherEDD(cpin, eddResponse) {
     var state = "";
     var city = "";
     let EDD = 0;
     let SBD = 0;
     let DBD = 0;
+    let LBD = 0;
     let userState = '';
     let GBD = 0;
     let skuWt = eddResponse.skuWt;
@@ -169,11 +170,14 @@ async function otherEDD(cpin, eddResponse) {
     console.log("Courier Data");
     console.log(Date());
     // ware and pincode 
-    if (await getIsAvailableInNDD(cpin) === eddResponse.warehouse) {
+    console.log("wt ads,ds akads ads kl adsldas da");
+    console.log(eddResponse);
+    if (await getIsAvailableInNDD(cpin) === eddResponse.warehouse && skuWt <= 20) {
         console.log("Going in NDD");
         EDD = 1;
         eddResponse = { ...eddResponse,courier:"NDD", "EDD": `${EDD}` };
     } else {
+
         eddResponse = { ...eddResponse, courier:"others" };
 
         const courierData = await getCourier(cpin, skuWt); // eddResponse.warehouse not required for the new table
@@ -199,9 +203,14 @@ async function otherEDD(cpin, eddResponse) {
             //EDD = courierData.EDD;
             eddResponse = { ...eddResponse, "EDD": `${EDD}` };
         }
+
+       LBD =  await GetLBD(whareHouseId,cpin,skuWt)
+       eddResponse = { ...eddResponse, "LBD": `${LBD}` };
+
     }
-        var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD);
+        var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD) + parseInt(LBD);
         console.log("total");
+        console.log(total);
 
         var currentDate = new Date();
         // currentDate.setHours(currentDate.getHours());
@@ -213,6 +222,7 @@ async function otherEDD(cpin, eddResponse) {
         console.log("cutoff");
         console.log(cutOffData);
         console.log(eddResponse.warehouse);
+
         let cutOffTime ;
         if (eddResponse.courier == "others") {
             console.log(cutOffData);
@@ -251,19 +261,25 @@ async function otherEDD(cpin, eddResponse) {
         date = currentDate.getDate();
         currentDate.setDate(date + total);
 
-        if( eddResponse.courier == "NDD" || eddResponse['ndd-disable-Sunday-Delivery'])
+        if( eddResponse.courier == "NDD")
      {
         console.log(eddResponse['ndd-disable-Sunday-Delivery']);
         console.log("in is adsas Sunday");
         //Checking Whether current day is equql to ndd disable day 
-        let isDay = weekday[currentDate.getDay()] == eddResponse['ndd-disable-Sunday-Delivery'];
-     if(isDay){
+        const currentDay = weekday[currentDate.getDay()];
+
+        // Split the 'ndd-disable-Sunday-Delivery' value
+        const disabledDays = eddResponse['ndd-disable-Sunday-Delivery']?.split(',');
+
+        // Check if the current day is in the disabled days
+        const isDayDisabled = disabledDays.includes(currentDay);
+     if(isDayDisabled){
         console.log("in is day");
         console.log("total",total);
         total += 1;
         console.log("total",total);
         date = currentDate.getDate();
-        currentDate.setDate(date + total);
+        currentDate.setDate(date + 1);
      }}
         eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "imageLike": `${utils.getImageLink(total)}` };
         console.log('yayyyy done other');

@@ -1,4 +1,4 @@
-const { get } = require("request");
+const request = require("request");
 const GetInventory = require("./Inventory/inventory.js");
 const otherEDD = require("./Othercouriers/othercourier.js")
 const Shipsy = require('./shipsy/shipsy.js')
@@ -49,8 +49,11 @@ async function EddMaincart(cpin, skus, qty) {
         } else {
             let final = [];
             let shipsyWeight = 0;
+            let NDDItemsWeight = 0;
             let shipsyItems = [];
+            let NDDItems = [];
             let shipsyWarehouse;
+            let NDDItemsWarehouse;
             let whGroups = {
                 'WN-MBLR0001': { group: [], wt: 0 },
                 'WN-MDEL0002': { group: [], wt: 0 },
@@ -94,7 +97,14 @@ async function EddMaincart(cpin, skus, qty) {
                         shipsyItems.push(a);
                         shipsyWarehouse = a.warehouse;
                         shipsyWeight += a.skuWt;
-                    } else {
+                    } 
+                    else if (a.courier === "NDD") {
+                        console.log("NDD");
+                        NDDItems.push(a);
+                        NDDItemsWarehouse = a.warehouse;
+                        NDDItemsWeight += a.skuWt;
+                    } 
+                    else {
                         const warehouseInfo = whGroups[a.warehouse];
                         if (warehouseInfo) {
                             warehouseInfo.group.push(a);
@@ -136,14 +146,43 @@ async function EddMaincart(cpin, skus, qty) {
                     // element = {...element, "combinedWt":shipsyWeight};
                     // final.push(element);
                 }
-            } else {
+            }
+            else {
                 for (let i = 0; i < shipsyItems.length; i++) {
                     let element = shipsyItems[i];
                     element = {...element, "combinedWt":shipsyWeight}
                     final.push(element);
                 }
             }
-
+            if (NDDItemsWeight !== 0 && NDDItemsWeight > 20) {
+                // let group = whGroups[shipsyWarehouse].group;
+                // let wtKey = NDDItemsWeight;
+                // console.log("Non Shipsy")
+                // console.log(group);   
+                for (let i = 0; i < NDDItems.length; i++) {
+                    console.log("haaa"); 
+                    let element = NDDItems[i];
+                    // console.log(element);
+                    element.courier = "others";
+                    console.log("element");
+                    console.log(element);
+                    element = {...element, "combinedWt":NDDItemsWeight};
+                    console.log("NDDItemsWeight");
+                    console.log(NDDItemsWeight,element);
+                    whGroups[`${NDDItemsWarehouse}`].group = [...whGroups[`${NDDItemsWarehouse}`].group,element];
+                    whGroups[`${NDDItemsWarehouse}`].wt = NDDItemsWeight;
+                    // const b = await otherEDD.otherEDD(NDDItems[i].cpin, element);
+                    // element = {...element, "combinedWt":NDDItemsWeight};
+                    // final.push(element);
+                }
+            }
+            else {
+                for (let i = 0; i < NDDItems.length; i++) {
+                    let element = NDDItems[i];
+                    element = {...element, "combinedWt":NDDItemsWeight}
+                    final.push(element);
+                }
+            }
             for (const warehouseId in whGroups) {
                 const group = whGroups[warehouseId].group;
                 for (let i = 0; i < group.length; i++) {

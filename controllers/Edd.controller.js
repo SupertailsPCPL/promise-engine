@@ -30,6 +30,7 @@ router.get("/edd", async (req, res, next) => {
         Type: item.Type,
         componentSkusData: item.componentSkusData,
         EDD: item.EDD,
+        LBD: item.LBD,
         responseCode: item.responseCode,
         dayCount: item.dayCount,
         deliveryDate: item.deliveryDate,
@@ -37,7 +38,8 @@ router.get("/edd", async (req, res, next) => {
         FLEDD: item.FLEDD,
         LLEDD: item.LLEDD,
         courier: item.courier,
-        imageLike: item.imageLike
+        imageLike: item.imageLike,
+        warehouse:item.warehouse
       }));
     }
     return res.send(response);
@@ -66,6 +68,7 @@ router.get("/edd", async (req, res, next) => {
         Type: item.Type,
         componentSkusData: item.componentSkusData,
         EDD: item.EDD,
+        LBD: item.LBD,
         responseCode: item.responseCode,
         dayCount: item.dayCount,
         deliveryDate: item.deliveryDate,
@@ -73,7 +76,8 @@ router.get("/edd", async (req, res, next) => {
         FLEDD: item.FLEDD,
         LLEDD: item.LLEDD,
         courier: item.courier,
-        imageLike: item.imageLike
+        imageLike: item.imageLike,
+        warehouse:item.warehouse
       }));
     }
     return res.send(response);
