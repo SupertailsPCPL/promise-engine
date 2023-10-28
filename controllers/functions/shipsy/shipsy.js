@@ -79,7 +79,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     city = cpinData.city;
     eddResponse = { ...eddResponse, "state": `${state.toUpperCase()}`, "city": `${city.toUpperCase()}`, "DBD": `${DBD}`, "GBD": `${GBD}` };
     console.log("eddResponse post dbd gbd and cpin data");
-    
+    console.log(eddResponse);
     if (shipsy == "Delhi") {
         whareHouseId = "WN-MDEL0002";
     }
@@ -88,6 +88,9 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     }
     else if (shipsy == "Bangalore") {
         whareHouseId = "WN-MBLR0001";
+    }
+    else {
+        whareHouseId = shipsy;
     }
     console.log(eddResponse[`${whareHouseId}`],eddResponse.qty);
     console.log("eddResponse adadsasdda");
@@ -154,7 +157,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     // console.log("cutoff aj");
     // console.log(cutOffData);
     // console.log(eddResponse.warehouse);
-    let cutOffTime = cutOffData[`shipsy-${eddResponse.warehouse}`].split(':') ?? [13,0];
+    let cutOffTime = cutOffData[`shipsy-${eddResponse.warehouse}`]?.split(':') ?? [14,0];
     // console.log("cutOffTime",cutOffTime);
     let cuttOfHour = parseInt(cutOffTime[0]);
     let cuttOfMin = parseInt(cutOffTime[1]);
