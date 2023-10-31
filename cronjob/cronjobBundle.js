@@ -42,10 +42,13 @@ async function processBundleItems() {
                 const componentSkusData = JSON.parse(bundleItem.componentSkusData);
                 const skuIds = componentSkusData.map(item => item.skuid);
                 const skuIdsQuoted = skuIds.map(skuCode => `'${skuCode}'`).join(', ');
-                promises.push(GetItemInv(skuIdsQuoted));
+                if(skuIdsQuoted){
+                    promises.push(GetItemInv(skuIdsQuoted));
+                }
             }
 
             const invDataArray = await Promise.all(promises);
+            console.log("dasldasladlslasl");
             for (let j = 0; j < batchItems.length; j++) {
                 const bundleItem = batchItems[j];
                 const invData = invDataArray[j];
@@ -99,6 +102,7 @@ async function processBundleItems() {
 
 // Function to get the item master data from the database
 async function GetItemInv(skus) {
+    console.log("daskdasksdak",skus);
     return new Promise((resolve, reject) => {
         try {
             // Use the connection pool to execute a query to fetch the item master data
@@ -110,6 +114,7 @@ async function GetItemInv(skus) {
                         resolve(false);
                     } else {
                         // Convert the query result to JSON and return it
+                        console.log(true);
                         resolve(JSON.parse(JSON.stringify(Logsresults)));
                     }
                 });

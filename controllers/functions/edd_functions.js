@@ -87,23 +87,40 @@ async function getEdd(cpin, skuId, qty) {
             let shipsy = await Shipsy.getIsAvailableInShipcity(cpin);
             console.log("check for shipsy city completed");
             console.log(Date());
-            if (shipsy !== false && qty * parseFloat(eddResponse.skuWt) <= 20) {
+            // console.log("ds aldasl ldsals laasl s");
+            console.log(shipsy);
+
+            // if (shipsy !== false && qty * parseFloat(eddResponse.skuWt) <= 20) {
+            if (shipsy !== false) {
                 console.log("going with shipsy ");
-                const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);
-                resolve(b);
+                let b ;
+                for (let i = 0; i < shipsy.length; i++) {
+                    const element = shipsy[i];   
+                    console.log("elementelement",element);
+                         b = await Shipsy.shipsyEDD(cpin, eddResponse, element.shipsyCity);
+                         if(b){
+                            // console.log("daldldladldlal",b);
+                             break;
+                         }
+                }
+                console.log("final respomseeeee");
+                console.log(b);
+                if(b){
+                    // console.log("dajskdkdasadsdasooso");
+                    resolve(b);
+                }
+                else{
+                    // console.log("adskdsakakdadskkdaskadska");
+                    console.log("going with other courier ");
+                    const b = await otherEDD.otherEDD(cpin, eddResponse);
+                    resolve(b);
+                    
+                }
             }
-            // else if(eddResponse.skuId.includes('DS')){
-            //     console.log("going with dropShip");
-            //     const b = await dropShipEDD(cpin, eddResponse);
-            //     return b;
-            // }
-            else {
-                console.log("going with other courier ");
+            else{
                 const b = await otherEDD.otherEDD(cpin, eddResponse);
                 resolve(b);
             }
-
-
         } catch (e) {
             console.log(e);
         }

@@ -286,17 +286,30 @@ async function getEdd(cpin, skuId, qty) {
 
             if (shipsy !== false) {
                 console.log("going with shipsy ");
-                const b = await Shipsy.shipsyEDD(cpin, eddResponse, shipsy.shipsyCity);
-                resolve(b);
-            }
-            // else if(eddResponse.skuId.includes('DS')){
-                    //     console.log("going with dropShip");
-                    //     const b = await dropShipEDD(cpin, eddResponse);
-                    //     return b;
-                    // }
+                 let b ;
+                for (let i = 0; i < shipsy.length; i++) {
+                    const element = shipsy[i];   
+                    console.log("elementelement",element);
+                         b = await Shipsy.shipsyEDD(cpin, eddResponse, element.shipsyCity);
+                         if(b){
+                            // console.log("daldldladldlal",b);
+                             break;
+                         }
+                }
+                console.log("final respomseeeee");
+                console.log(b);
+                if(b){
+                    // console.log("dajskdkdasadsdasooso");
+                    resolve(b);
+                }
             else {
                 console.log("going with other courier ");
                 console.log(eddResponse)
+                const b = await otherEDD.otherEDD(cpin, eddResponse);
+                resolve(b);
+            }
+        }
+           else{
                 const b = await otherEDD.otherEDD(cpin, eddResponse);
                 resolve(b);
             }

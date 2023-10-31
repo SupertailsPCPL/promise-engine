@@ -5,6 +5,7 @@ module.exports = getSBD;
 async function getSBD(wareHouseId) {
     let promise = new Promise((resolve, reject) => {
         try {
+            console.log(wareHouseId);
             promiseEngineConnection.query(
                 `SELECT * FROM SBD WHERE WH = ?`, wareHouseId,
                 async function (error, SBDresults, fields) {
@@ -13,7 +14,7 @@ async function getSBD(wareHouseId) {
                     // console.log(SBDresults);
                     if (SBDresults) {
                         // console.log('9-T9-SBDresults Found');
-                        resolve(JSON.parse(JSON.stringify(SBDresults))[0].SBD);
+                        resolve(JSON.parse(JSON.stringify(SBDresults))[0]?.SBD);
                     } else {
                         // console.log('-9-T9-SBDresults Not Found');
                         resolve(0);

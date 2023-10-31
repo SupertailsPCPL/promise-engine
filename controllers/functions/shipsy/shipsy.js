@@ -19,7 +19,7 @@ async function getIsAvailableInShipcity(cPin) {
     let promise = new Promise(async (resolve, reject) => {
         try {
             promiseEngineConnection.query(
-                "SELECT shipsyCity FROM shipsy_city WHERE cPin = ?", cPin,
+                `SELECT * FROM promiseEngine.shipsy_city WHERE cPin = ${cPin} order by priority`,
                 async function (error, shipsyCityResults, fields) {
                     if (error) {
                         console.error(error);
@@ -27,7 +27,9 @@ async function getIsAvailableInShipcity(cPin) {
                     console.log('ShipsyCity');
                     if (shipsyCityResults.length) {
                         console.log('ShipsyCity Found');
-                        resolve(JSON.parse(JSON.stringify(shipsyCityResults))[0]);
+                        let dataRes = JSON.parse(JSON.stringify(shipsyCityResults));
+                        console.log(dataRes);
+                        resolve(dataRes);
                     } else {
                         console.log('ShipsyCity Not Found');
                         resolve(false);
@@ -44,6 +46,8 @@ async function getIsAvailableInShipcity(cPin) {
 
 
 async function shipsyEDD(cpin, eddResponse, shipsy) {
+    console.log("ajajaja jds jsadajds  j dasdasas");
+    console.log(cpin, eddResponse, shipsy);
     var state = "";
     var city = "";
     let EDD = 0;
@@ -97,46 +101,8 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     eddResponse = {...eddResponse, "warehouse": `${whareHouseId}`}
     console.log(eddResponse);
     if(eddResponse[`${whareHouseId}`] < eddResponse.qty){
-        const b = await otherEDD.otherEDD(cpin, eddResponse);
-        return b;
+        return false;
     }
-    //This is for handling shpsy simple and bundle skusss
-    //what was before
-    // if (eddResponse.Type === "SIMPLE") {
-    //     p1InvQty = eddResponse[`${whareHouseId}`]
-    //     console.log("Inv");
-    //     console.log(p1InvQty);
-    //     eddResponse = { ...eddResponse, "warehouse": `${whareHouseId}`, "InvQty": p1InvQty };
-    //     console.log("skuData post whid and invqty");
-    //     console.log(eddResponse);
-    //     if (p1InvQty < qty) {
-    //         console.log("going with other courier ");
-    //         const b = await otherEDD.otherEDD(cpin, eddResponse);
-    //         return b;
-    //     }
-    // }
-    // else {
-    //     console.log("hey enter bundle inv check");
-    //     let eddv = JSON.parse(eddResponse.componentSkusData);
-    //     for (let i = 0; i < eddv.length; i++) {
-    //         let element = eddv[i];;
-    //         console.log(element);
-    //         console.log("Elelmetttttttt");
-    //         console.log(element.skuid);
-    //         console.log(element);
-    //         let invQty = await GetInventory(element.skuid);
-    //         p1InvQty = invQty[`${whareHouseId}`]
-    //         eddResponse = { ...eddResponse, "warehouse": `${whareHouseId}` };
-    //         console.log("skuData post whid and invqty");
-    //         console.log(eddResponse);
-    //         if (p1InvQty < element.qty) {
-    //             console.log("going with other courier ");
-    //             const b = await otherEDD(cpin, eddResponse);
-    //             return b;
-    //         }
-    //     }
-    // }
-
     console.log("SBD Data");
     console.log(Date());
     SBD = await getSBD(whareHouseId);
