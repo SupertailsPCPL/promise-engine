@@ -290,7 +290,7 @@ async function getEdd(cpin, skuId, qty) {
                 for (let i = 0; i < shipsy.length; i++) {
                     const element = shipsy[i];   
                     console.log("elementelement",element);
-                         b = await Shipsy.shipsyEDD(cpin, eddResponse, element.shipsyCity);
+                         b = await Shipsy.shipsyEDD(cpin, eddResponse, element.shipsyCity,element.LBD);
                          if(b){
                             // console.log("daldldladldlal",b);
                              break;

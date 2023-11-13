@@ -45,9 +45,10 @@ async function getIsAvailableInShipcity(cPin) {
 }
 
 
-async function shipsyEDD(cpin, eddResponse, shipsy) {
+async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
     console.log("ajajaja jds jsadajds  j dasdasas");
-    console.log(cpin, eddResponse, shipsy);
+
+    console.log(cpin, eddResponse, shipsy,LDB);
     var state = "";
     var city = "";
     let EDD = 0;
@@ -81,7 +82,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     userState = cpinData.state;
     state = cpinData.stateFullName;
     city = cpinData.city;
-    eddResponse = { ...eddResponse, "state": `${state.toUpperCase()}`, "city": `${city.toUpperCase()}`, "DBD": `${DBD}`, "GBD": `${GBD}` };
+    eddResponse = { ...eddResponse, "state": `${state.toUpperCase()}`, "city": `${city.toUpperCase()}`, "DBD": `${DBD}`, "GBD": `${GBD}`};
     console.log("eddResponse post dbd gbd and cpin data");
     console.log(eddResponse);
     if (shipsy == "Delhi") {
@@ -123,7 +124,14 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     // console.log("cutoff aj");
     // console.log(cutOffData);
     // console.log(eddResponse.warehouse);
+    let SDDLBD = LDB ?? 0;
+    console.log("as,dsalsalalslas");
+    console.log(LDB);
+    eddResponse = { ...eddResponse,"LDB": `${LDB}`};
+
     let cutOffTime = cutOffData[`shipsy-${eddResponse.warehouse}`]?.split(':') ?? [14,0];
+    SDDLBD =SDDLBD + cutOffData[`shipsy-${eddResponse.warehouse}-bufferdays`] ?? 0;
+
     // console.log("cutOffTime",cutOffTime);
     let cuttOfHour = parseInt(cutOffTime[0]);
     let cuttOfMin = parseInt(cutOffTime[1]);
@@ -141,8 +149,10 @@ async function shipsyEDD(cpin, eddResponse, shipsy) {
     eddResponse = { ...eddResponse, "currentDate": `${currentDate}`, "cutoff": `${cutoff}`, "timeLeftInMinutes": `${timeLeftToCuttOff}`, "EDD": `${EDD}`};
     console.log("eddResponse post all time events");
    
-    var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD);
-    
+    var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD) + parseInt(SDDLBD);
+        console.log("adsladsldsalasdlasdladslasdllas");
+        console.log( "parseInt(SBD) , parseInt(DBD) , parseInt(GBD) , parseInt(EDD) , parseInt(SDDLBD)");
+        console.log( parseInt(SBD) , parseInt(DBD) , parseInt(GBD) , parseInt(EDD) , parseInt(SDDLBD));
     if (cutoff > currentDate) {
         total = total;
     }
