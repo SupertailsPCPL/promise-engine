@@ -19,6 +19,10 @@ router.get("/inventory", async (req, res, next) => {
   console.log("bunde cron ended",Date());  
     return res.status(200).json({
       message: "itemInv cronjob successfully completed",
+      bundleInv:bundleInv,
+      singleInv:funcRes
+
+
     }); 
   });
 
