@@ -2,22 +2,23 @@ const request = require('request');
 const connectionPool = require('../dbPromiseEngine.js'); // Make sure dbpromiseEngine.js exports a connection pool
 
 // Function to get the item master data from the database
-async function GetItemMaster(isSimple) {
+async function GetItemMaster() {
     return new Promise((resolve, reject) => {
         try {
             // Use the connection pool to execute a query to fetch the item master data
             connectionPool.query(
-                `SELECT * FROM promiseEngine.EDDItemMaster;`,
-                // `Select * from EDDItemMaster where Type = "${isSimple ? "SIMPLE" : "BUNDLE"}"`,
-                function (error, Logsresults, fields) {
-                    if (error) {
-                        console.log(error);
-                        resolve(false);
-                    } else {
-                        // Convert the query result to JSON and return it
-                        resolve(JSON.parse(JSON.stringify(Logsresults)));
-                    }
-                });
+                // `SELECT * FROM promiseEngine.EDDItemMaster where skuId in ('abg60X2')`,
+                // `SELECT * FROM promiseEngine.EDDItemMaster;`,
+                `Select * from EDDItemMaster where Type = "BUNDLE"`,
+                (error, Logsresults, fields) => {
+                if (error) {
+                    console.log(error);
+                    resolve(false);
+                } else {
+                    // Convert the query result to JSON and return it
+                    resolve(JSON.parse(JSON.stringify(Logsresults)));
+                }
+            });
         } catch (e) {
             console.log(e);
             resolve(false);
@@ -124,18 +125,18 @@ async function GetItemInv(skus) {
         }
     });
 }
-
 async function insertOrUpdateInventory(inventoryObject) {
+    try{
     const skuCode = inventoryObject.skuCode;
     delete inventoryObject.skuCode;
 
-    // Convert 'null' string values to actual null values
+    if(Object.keys(inventoryObject).length > 0){
+            // Convert 'null' string values to actual null values
     for (const key in inventoryObject) {
         if (inventoryObject[key] === 'null') {
             inventoryObject[key] = null;
         }
     }
-
     const columns = Object.keys(inventoryObject);
     const values = Object.values(inventoryObject);
 
@@ -167,6 +168,16 @@ async function insertOrUpdateInventory(inventoryObject) {
             }
         });
     });
+}
+else{
+    return false
+}
+
+}catch(e){
+    console.log(e);
+    return false
+   
+}
 }
 
 

@@ -39,7 +39,9 @@ router.get("/edd", async (req, res, next) => {
         LLEDD: item.LLEDD,
         courier: item.courier,
         imageLike: item.imageLike,
-        warehouse:item.warehouse
+        warehouse:item.warehouse,
+        state:item.state,
+        city:item.city,
       }));
     }
     return res.send(response);
@@ -77,7 +79,10 @@ router.get("/edd", async (req, res, next) => {
         LLEDD: item.LLEDD,
         courier: item.courier,
         imageLike: item.imageLike,
-        warehouse:item.warehouse
+        warehouse:item.warehouse,
+        state:item.state,
+        city:item.city,
+
       }));
     }
     return res.send(response);

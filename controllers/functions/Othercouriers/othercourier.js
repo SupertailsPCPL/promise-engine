@@ -157,6 +157,14 @@ async function otherEDD(cpin, eddResponse) {
             "error": "Out of Stock"
         });
     }
+    if (whareHouseId == "PWH001") {
+        return ({
+            "skuId": eddResponse.skuId,
+            "responseCode": "499",
+            "deliveryDate":"  ",
+            "deliveryDay": "3 to 7 days",
+        })
+    }
     eddResponse.warehouse = whareHouseId;
     console.log("EDD Warehouse");
     console.log(eddResponse.warehouse);
@@ -226,7 +234,7 @@ async function otherEDD(cpin, eddResponse) {
         let cutOffTime ;
         if (eddResponse.courier == "others") {
             console.log(cutOffData);
-             cutOffTime = cutOffData[`others-${eddResponse.warehouse}`]?.split(':') ?? [13,0];
+             cutOffTime = cutOffData[`others-${eddResponse.warehouse}`]?.split(':') ?? [12,0];
                 console.log("cutOffTime Aj");
                 console.log(cutOffTime);
             }
@@ -262,7 +270,12 @@ async function otherEDD(cpin, eddResponse) {
         total= total + NDDLBD;
         date = currentDate.getDate();
         currentDate.setDate(date + total);
-
+        if(eddResponse.state == "TELANGANA" && currentDate.getDate() == 31){
+            total += 1
+            currentDate.setDate(currentDate + 1);
+        }
+        // console.log("currentDate.getDay()");
+        // console.log(currentDate.getDate());
         if( eddResponse.courier == "NDD")
      {
         console.log(eddResponse['ndd-disable-Sunday-Delivery']);
@@ -283,7 +296,15 @@ async function otherEDD(cpin, eddResponse) {
         date = currentDate.getDate();
         currentDate.setDate(date + 1);
      }}
-        eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "imageLike": `${utils.getImageLink(total)}` };
+     if(eddResponse.warehouse != "WN-MBHI0003" && eddResponse.warehouse != "WN-MDEL0002" &&eddResponse.warehouse != "WN-MBLR0001"){
+        const currentDay = weekday[currentDate.getDay()];
+        if(currentDay == "Sun"){
+            total += 1;
+            date = currentDate.getDate();
+            currentDate.setDate(date + 1);
+        }
+     }
+        eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : " "}`, "deliveryDay": `${(total) === 0 ? "9PM, Today" : (total) === 1 ? "9PM, Tomorrow" : weekday[currentDate.getDay()]}`, "imageLike": `${utils.getImageLink(total)}` };
         console.log('yayyyy done other');
         console.log(eddResponse);
         return eddResponse;

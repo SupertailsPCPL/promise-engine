@@ -8,8 +8,6 @@ const utils = require("../Util/utils")
 const otherEDD = require("../Othercouriers/othercourier.js");
 
 
-
-
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -97,6 +95,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
     else {
         whareHouseId = shipsy;
     }
+    console.log(eddResponse);
     console.log(eddResponse[`${whareHouseId}`],eddResponse.qty);
     console.log("eddResponse adadsasdda");
     eddResponse = {...eddResponse, "warehouse": `${whareHouseId}`}
@@ -128,7 +127,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
     console.log("as,dsalsalalslas");
     console.log(LDB);
     eddResponse = { ...eddResponse,"LDB": `${LDB}`};
-
+    
     let cutOffTime = cutOffData[`shipsy-${eddResponse.warehouse}`]?.split(':') ?? [14,0];
     SDDLBD =SDDLBD + cutOffData[`shipsy-${eddResponse.warehouse}-bufferdays`] ?? 0;
 
@@ -152,18 +151,35 @@ async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
     var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD) + parseInt(SDDLBD);
         console.log("adsladsldsalasdlasdladslasdllas");
         console.log( "parseInt(SBD) , parseInt(DBD) , parseInt(GBD) , parseInt(EDD) , parseInt(SDDLBD)");
-        console.log( parseInt(SBD) , parseInt(DBD) , parseInt(GBD) , parseInt(EDD) , parseInt(SDDLBD));
-    if (cutoff > currentDate) {
-        total = total;
-    }
-    else {
-        total += 1;
-    }
-    // if(eddResponse.warehouse == "WN-MBHI0003"){
-    //     total +=1
-    // }
-    date = currentDate.getDate();
-    currentDate.setDate(date + total);
+        console.log( parseInt(SBD) , parseInt(DBD) , parseInt(GBD) , parseInt(EDD) , parseInt(SDDLBD)??0);
+  let getByDate= "9PM";
+        if(eddResponse.warehouse == "CWH-BLR001"){
+            var currentHour = currentDate.getHours();
+            total = total;
+
+            if (currentHour >= 8 && currentHour < 10) {
+                getByDate = "12PM"
+            }else  if (currentHour >= 10 && currentHour < 12) {
+                getByDate = "2PM"
+            }else  if (currentHour >= 12 && currentHour < 14) {
+                getByDate = "4PM"
+            }else  if (currentHour >= 14 && currentHour < 16) {
+                getByDate = "6PM"
+            }else  if (currentHour >= 16 && currentHour < 18) {
+                getByDate = "8PM"
+            }else{
+                total += 1;
+            }
+        }else{            
+            if (cutoff > currentDate) {
+                total = total;
+            }
+            else {
+                total += 1;
+            }
+        }
+        date = currentDate.getDate();
+        currentDate.setDate(date + total);
      if(eddResponse['shipsy-disable-Sunday-Delivery'])
      {
         console.log(eddResponse['shipsy-disable-Sunday-Delivery']);
@@ -178,7 +194,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
         date = currentDate.getDate();
         currentDate.setDate(date + total);
      }}
-    eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : "between 4PM - 10PM"}`, "deliveryDay": `${(total) === 0 ? "Today" : (total) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`, "FLEDD": 0, "LLEDD": 0, "courier": "shipsy", "imageLike": `${utils.getImageLink(total)}` };
+    eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : " "}`, "deliveryDay": `${(total) === 0 ? `${getByDate}, Today` : (total) === 1 ? `${getByDate}, Tomorrow` : weekday[currentDate.getDay()]}`, "FLEDD": 0, "LLEDD": 0, "courier": "shipsy", "imageLike": `${utils.getImageLink(total)}` };
     console.log('yayyyy done');
     console.log(eddResponse);
     return eddResponse;

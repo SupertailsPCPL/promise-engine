@@ -234,8 +234,8 @@ async function EddMaincart(cpin, skus, qty) {
                     group[i].combinedWt = whGroups[warehouseId].wt;
                     const date = currentDate.getDate();
                     currentDate.setDate(date + daycount);
-                    group[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : "between 4PM - 10PM"}`;
-                    group[i].deliveryDay = `${(daycount) === 0 ? "Today" : (daycount) === 1 ? "Tomorrow" : weekday[currentDate.getDay()]}`;
+                    group[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : " "}`;
+                    group[i].deliveryDay = `${(daycount) === 0 ? "9PM, Today" : (daycount) === 1 ? "9PM, Tomorrow" : weekday[currentDate.getDay()]}`;
                     final.push(group[i]);
 
                 }
