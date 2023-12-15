@@ -126,26 +126,31 @@ async function otherEDD(cpin, eddResponse) {
     }
     console.log("testing");
     const warehousePriorities = [
-        "WHP1", "WHP2", "WHP3", "WHP4", "WHP5", "WHP6", "WHP7", "WHP8", "WHP9", "WHP10", "WHP11", "WHP12", "WHP13", "WHP14", "WHP15", "WHP16", "WHP17", "WHP18", "WHP19", "WHP20"
+        "WHP1", "WHP2", "WHP3", "WHP4", "WHP5", "WHP6", "WHP7", "WHP8", "WHP9", "WHP10", "WHP11", "WHP12", "WHP13", "WHP14", "WHP15", "WHP16", "WHP17", "WHP18", "WHP19", "WHP20","WHP21","WHP22","WHP23","WHP24","WHP25","WHP26","WHP27"
     ];
     let eddqty = eddResponse.qty;
     console.log(eddResponse);
     console.log(eddqty);
     let whareHouseId;
 
+    console.log("wareHousePriorityData",wareHousePriorityData);
     for (const warehousePriority of warehousePriorities) {
         let warehouseId = wareHousePriorityData[`${warehousePriority}`];
-        if (eddResponse[`${warehouseId}`] === null || eddResponse[`${warehouseId}`] === 0) {
-            console.log("going in null");
+        console.log(warehousePriority,warehouseId);
+        if (eddResponse[`${warehouseId}`] === null || eddResponse[`${warehouseId}`] === 0,!eddResponse[`${warehouseId}`]) {
+            console.log(warehouseId,"going in null");
             continue; // Skip to the next warehouse if warehouseId is empty or null
         }
         else if (eddqty <= eddResponse[`${warehouseId}`]) {
             whareHouseId = warehouseId;
             break;
         } else {
-            eddqty = eddqty - parseInt(eddResponse[`${warehouseId}`]);
+            console.log(warehouseId,"jjbjbj");
+            console.log(eddResponse[`${warehouseId}`],eddqty);
+            eddqty = eddqty - parseInt(eddResponse[`${warehouseId}`]??0);
         }
     }
+    console.log("final",whareHouseId);
     if (whareHouseId) {
         console.log("Final whareHouseId");
         console.log(whareHouseId);
@@ -160,9 +165,12 @@ async function otherEDD(cpin, eddResponse) {
     if (whareHouseId == "PWH001") {
         return ({
             "skuId": eddResponse.skuId,
+            "city": eddResponse.city,
+            "state": eddResponse.state,
             "responseCode": "499",
+            "warehouse":"PWH001",
             "deliveryDate":"  ",
-            "deliveryDay": "3 to 7 days",
+            "deliveryDay": "3 to 7 days"
         })
     }
     eddResponse.warehouse = whareHouseId;
@@ -304,7 +312,7 @@ async function otherEDD(cpin, eddResponse) {
             currentDate.setDate(date + 1);
         }
      }
-        eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : " "}`, "deliveryDay": `${(total) === 0 ? "9PM, Today" : (total) === 1 ? "9PM, Tomorrow" : weekday[currentDate.getDay()]}`, "imageLike": `${utils.getImageLink(total)}` };
+        eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : " "}`, "deliveryDay": `${(total) === 0 ? "9 PM, Today" : (total) === 1 ? "9 PM, Tomorrow" : weekday[currentDate.getDay()]}`, "imageLike": `${utils.getImageLink(total)}` };
         console.log('yayyyy done other');
         console.log(eddResponse);
         return eddResponse;

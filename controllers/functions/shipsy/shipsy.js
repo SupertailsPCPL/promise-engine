@@ -152,21 +152,21 @@ async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
         console.log("adsladsldsalasdlasdladslasdllas");
         console.log( "parseInt(SBD) , parseInt(DBD) , parseInt(GBD) , parseInt(EDD) , parseInt(SDDLBD)");
         console.log( parseInt(SBD) , parseInt(DBD) , parseInt(GBD) , parseInt(EDD) , parseInt(SDDLBD)??0);
-  let getByDate= "9PM";
+  let getByDate= "9 PM";
         if(eddResponse.warehouse == "CWH-BLR001"){
             var currentHour = currentDate.getHours();
             total = total;
 
             if (currentHour >= 8 && currentHour < 10) {
-                getByDate = "12PM"
+                getByDate = "12 PM"
             }else  if (currentHour >= 10 && currentHour < 12) {
-                getByDate = "2PM"
+                getByDate = "2 PM"
             }else  if (currentHour >= 12 && currentHour < 14) {
-                getByDate = "4PM"
+                getByDate = "4 PM"
             }else  if (currentHour >= 14 && currentHour < 16) {
-                getByDate = "6PM"
+                getByDate = "6 PM"
             }else  if (currentHour >= 16 && currentHour < 18) {
-                getByDate = "8PM"
+                getByDate = "8 PM"
             }else{
                 total += 1;
             }

@@ -74,7 +74,9 @@ async function EddMaincart(cpin, skus, qty) {
                 'WH015': { group: [], wt: 0 },
                 'WH016': { group: [], wt: 0 },
                 'WH017': { group: [], wt: 0 },
-                'WH018': { group: [], wt: 0 }
+                'WH018': { group: [], wt: 0 },
+                'CWH-BLR001': { group: [], wt: 0 },
+                'WHHYD001': { group: [], wt: 0 }
             };
 
             console.log("before");
@@ -92,7 +94,9 @@ async function EddMaincart(cpin, skus, qty) {
                 console.log(a);
 
                 if (a.hasOwnProperty('courier')) {
-                    if (a.courier === "shipsy") {
+                    if (a.courier === "shipsy" && a.warehouse == "CWH-BLR001") {
+                        final.push(a);
+                    } else if (a.courier === "shipsy") {
                         console.log("shippppp");
                         shipsyItems.push(a);
                         shipsyWarehouse = a.warehouse;
@@ -235,7 +239,7 @@ async function EddMaincart(cpin, skus, qty) {
                     const date = currentDate.getDate();
                     currentDate.setDate(date + daycount);
                     group[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : " "}`;
-                    group[i].deliveryDay = `${(daycount) === 0 ? "9PM, Today" : (daycount) === 1 ? "9PM, Tomorrow" : weekday[currentDate.getDay()]}`;
+                    group[i].deliveryDay = `${(daycount) === 0 ? "9 PM, Today" : (daycount) === 1 ? "9 PM, Tomorrow" : weekday[currentDate.getDay()]}`;
                     final.push(group[i]);
 
                 }
