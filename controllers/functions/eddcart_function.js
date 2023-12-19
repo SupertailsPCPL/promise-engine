@@ -76,7 +76,14 @@ async function EddMaincart(cpin, skus, qty) {
                 'WH017': { group: [], wt: 0 },
                 'WH018': { group: [], wt: 0 },
                 'CWH-BLR001': { group: [], wt: 0 },
-                'WHHYD001': { group: [], wt: 0 }
+                'WHHYD001': { group: [], wt: 0 },
+                'WH019': { group: [], wt: 0 },
+                'WH020': { group: [], wt: 0 },
+                'WH021': { group: [], wt: 0 },
+                'WH022': { group: [], wt: 0 },
+                'WH023': { group: [], wt: 0 },
+                'WH024': { group: [], wt: 0 },
+                'WH025': { group: [], wt: 0 }
             };
 
             console.log("before");

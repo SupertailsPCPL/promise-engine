@@ -153,6 +153,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
         console.log( "parseInt(SBD) , parseInt(DBD) , parseInt(GBD) , parseInt(EDD) , parseInt(SDDLBD)");
         console.log( parseInt(SBD) , parseInt(DBD) , parseInt(GBD) , parseInt(EDD) , parseInt(SDDLBD)??0);
   let getByDate= "9 PM";
+  console.log("AJJJJJJ",total);
         if(eddResponse.warehouse == "CWH-BLR001"){
             var currentHour = currentDate.getHours();
             total = total;
@@ -168,7 +169,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
             }else  if (currentHour >= 16 && currentHour < 18) {
                 getByDate = "8 PM"
             }else{
-                total += 1;
+                getByDate = "9 PM"
             }
         }else{            
             if (cutoff > currentDate) {

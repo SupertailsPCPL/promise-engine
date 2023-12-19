@@ -81,12 +81,20 @@ async function UniCommerceApiinventory(wareHouseId, skuid, accessToken) {
           console.error(error);
           resolve(false);
         } else {
-          const data = JSON.parse(body);
-          if (data.successful === true) {
-            resolve(data.inventorySnapshots); // Return the inventory data
-          } else {
-            resolve(false);
-          }
+          // console.log(body);
+          // if(typeof body != "string"){
+            const data = JSON.parse(body);
+            if (data.successful === true) {
+              resolve(data.inventorySnapshots); // Return the inventory data
+            } else {
+              resolve(false);
+            }
+          // }
+          // else{
+          //   console.log(body);
+          //   console.log("ggujgjbjbj",wareHouseId);
+          //   resolve(false);
+          // }
         }
       });
     });
@@ -154,6 +162,7 @@ async function processWarehouse(warehouseId, accessToken) {
     }
   } catch (error) {
     console.error('Error:', error);
+    return true
   }
 }
 
@@ -174,7 +183,7 @@ async function runInventorySnapshotForWarehouses() {
     // promises.push(...warehouseIds.map(warehouseId => processBundleItems(warehouseId, accessToken)));
 
     await Promise.all(promises);
-
+    console.log("aj doneee");
     return true;
   } catch (error) {
     console.error('Error:', error);
@@ -183,8 +192,7 @@ async function runInventorySnapshotForWarehouses() {
 }
 
 // // List of warehouses for inventory snapshot process
-// const warehouses = ["WN-MDEL0002","WHHYD001", "WN-MBHI0003", "WN-MBLR0001", "PWH001", "WH004", "WH005",  "WH006", "WH007", "WH008", "WH009", "WH010", "WH011", "WH012", "WH013", "WH014", "WH015", "WH016", "WH018","CWH-BLR001"];
+const warehouses = ['WN-MBHI0003','WN-MBLR0001','WN-MDEL0002','WHHYD001','PWH001','WH004','WH005','WH006','WH007','WH008','WH009','WH010','WH011','WH012','WH013','WH014','WH015','WH016','WH017','WH018','WH019','WH020','WH021','WH022','WH023','WH024','WH025']
 // List of warehouses for inventory snapshot process
-const warehouses=["WHHYD001"]
-
+// const warehouses=["WN-DRKOL01"]
   module.exports = runInventorySnapshotForWarehouses;;

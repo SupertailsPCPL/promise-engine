@@ -224,7 +224,7 @@ async function otherEDD(cpin, eddResponse) {
        eddResponse = { ...eddResponse, "LBD": `${LBD}` };
 
     }
-        var total = parseInt(SBD) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD) + parseInt(LBD);
+        var total = parseInt(SBD ?? 0) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD) + parseInt(LBD);
         console.log("total");
         console.log(total);
 
