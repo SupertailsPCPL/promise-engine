@@ -44,8 +44,6 @@ async function getIsAvailableInShipcity(cPin) {
 
 
 async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
-    console.log("ajajaja jds jsadajds  j dasdasas");
-
     console.log(cpin, eddResponse, shipsy,LDB);
     var state = "";
     var city = "";
@@ -153,21 +151,25 @@ async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
         console.log( "parseInt(SBD) , parseInt(DBD) , parseInt(GBD) , parseInt(EDD) , parseInt(SDDLBD)");
         console.log( parseInt(SBD) , parseInt(DBD) , parseInt(GBD) , parseInt(EDD) , parseInt(SDDLBD)??0);
   let getByDate= "9 PM";
-  console.log("AJJJJJJ",total);
+  let is2HourDelivery = false;
         if(eddResponse.warehouse == "CWH-BLR001"){
             var currentHour = currentDate.getHours();
             total = total;
-
             if (currentHour >= 8 && currentHour < 10) {
-                getByDate = "12 PM"
+                getByDate = "12 PM";
+                is2HourDelivery = true;
             }else  if (currentHour >= 10 && currentHour < 12) {
-                getByDate = "2 PM"
+                getByDate = "2 PM";
+                is2HourDelivery = true;
             }else  if (currentHour >= 12 && currentHour < 14) {
-                getByDate = "4 PM"
+                getByDate = "4 PM";
+                is2HourDelivery = true;
             }else  if (currentHour >= 14 && currentHour < 16) {
-                getByDate = "6 PM"
+                getByDate = "6 PM";
+                is2HourDelivery = true;
             }else  if (currentHour >= 16 && currentHour < 18) {
-                getByDate = "8 PM"
+                getByDate = "8 PM";
+                is2HourDelivery = true;
             }else{
                 getByDate = "9 PM"
             }
@@ -195,7 +197,7 @@ async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
         date = currentDate.getDate();
         currentDate.setDate(date + total);
      }}
-    eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : " "}`, "deliveryDay": `${(total) === 0 ? `${getByDate}, Today` : (total) === 1 ? `${getByDate}, Tomorrow` : weekday[currentDate.getDay()]}`, "FLEDD": 0, "LLEDD": 0, "courier": "shipsy", "imageLike": `${utils.getImageLink(total)}` };
+    eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : " "}`, "deliveryDay": `${(total) === 0 ? `${getByDate}, Today` : (total) === 1 ? `${getByDate}, Tomorrow` : weekday[currentDate.getDay()]}`, "FLEDD": 0, "LLEDD": 0, "courier": "shipsy", "is2HourDelivery":is2HourDelivery,"imageLike": `${utils.getImageLink(total)}` };
     console.log('yayyyy done');
     console.log(eddResponse);
     return eddResponse;

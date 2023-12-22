@@ -60,6 +60,7 @@ async function EddMaincart(cpin, skus, qty) {
                 'WN-MBHI0003': { group: [], wt: 0 },
                 'WN-DRKOL01': { group: [], wt: 0 },
                 'PWH001': { group: [], wt: 0 },
+                'PWH002': { group: [], wt: 0 },
                 'WH004': { group: [], wt: 0 },
                 'WH005': { group: [], wt: 0 },
                 'WH006': { group: [], wt: 0 },

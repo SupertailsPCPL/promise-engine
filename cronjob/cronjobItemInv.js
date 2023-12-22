@@ -192,7 +192,7 @@ async function runInventorySnapshotForWarehouses() {
 }
 
 // // List of warehouses for inventory snapshot process
-const warehouses = ['WN-MBHI0003','WN-MBLR0001','WN-MDEL0002','WHHYD001','PWH001','WH004','WH005','WH006','WH007','WH008','WH009','WH010','WH011','WH012','WH013','WH014','WH015','WH016','WH017','WH018','WH019','WH020','WH021','WH022','WH023','WH024','WH025']
+const warehouses = ['WN-MBHI0003','WN-MBLR0001','WN-MDEL0002','WHHYD001','PWH001','PWH002','WH004','WH005','WH006','WH007','WH008','WH009','WH010','WH011','WH012','WH013','WH014','WH015','WH016','WH017','WH018','WH019','WH020','WH021','WH022','WH023','WH024','WH025']
 // List of warehouses for inventory snapshot process
 // const warehouses=["WN-DRKOL01"]
   module.exports = runInventorySnapshotForWarehouses;;

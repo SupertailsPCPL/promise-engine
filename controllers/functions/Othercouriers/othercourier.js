@@ -243,8 +243,6 @@ async function otherEDD(cpin, eddResponse) {
         if (eddResponse.courier == "others") {
             console.log(cutOffData);
              cutOffTime = cutOffData[`others-${eddResponse.warehouse}`]?.split(':') ?? [12,0];
-                console.log("cutOffTime Aj");
-                console.log(cutOffTime);
             }
         else{
             //Created ndd for three warehouse
