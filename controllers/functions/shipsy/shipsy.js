@@ -170,7 +170,13 @@ async function shipsyEDD(cpin, eddResponse, shipsy,LDB) {
             }else  if (currentHour >= 16 && currentHour < 18) {
                 getByDate = "8 PM";
                 is2HourDelivery = true;
-            }else{
+            }
+            else  if (currentHour >= 18 && currentHour < 24) {
+                getByDate = "9 PM";
+                total += 1;
+                is2HourDelivery = false;
+            }
+            else{
                 getByDate = "9 PM"
             }
         }else{            
