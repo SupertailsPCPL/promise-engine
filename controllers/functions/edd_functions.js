@@ -98,7 +98,7 @@ async function getEdd(cpin, skuId, qty) {
                     const element = shipsy[i];   
 
                     console.log("elementelement",element);
-                         b = await Shipsy.shipsyEDD(cpin, eddResponse, element.shipsyCity,element.LBD);
+                         b = await Shipsy.shipsyEDD(cpin, eddResponse, element?.shipsyCity,element?.LBD,element?.is2HourDelivery);
                          if(b){
                             // console.log("daldldladldlal",b);
                              break;
