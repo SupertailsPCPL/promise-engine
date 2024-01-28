@@ -237,9 +237,16 @@ async function shipsyEDD(cpin, eddResponse, shipsy, LDB, enable2HourDelivery) {
             total += 1;
             console.log("total", total);
             date = currentDate.getDate();
-            currentDate.setDate(date + total);
+            currentDate.setDate(date + 1);
         }
     }
+    // const currentDayy = weekday[currentDate.getDay()];
+    // if(currentDayy == "Fri"){
+    //         total += 1;
+    //        date = currentDate.getDate();
+    //        currentDate.setDate(date + 1);
+    // }
+
     eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : " "}`, "deliveryDay": `${(total) === 0 ? `${getByDate}, Today` : (total) === 1 ? `${getByDate}, Tomorrow` : weekday[currentDate.getDay()]}`, "FLEDD": 0, "LLEDD": 0, "courier": "shipsy", "is2HourDelivery": is2HourDelivery, "imageLike": `${utils.getImageLink(total)}` };
     console.log('yayyyy done');
     console.log(eddResponse);

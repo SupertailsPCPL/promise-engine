@@ -272,6 +272,7 @@ async function otherEDD(cpin, eddResponse) {
         else {
             total += 1;
         }
+
         console.log("DASldasldsal dsalads l");
         total= total + NDDLBD;
         date = currentDate.getDate();
@@ -310,6 +311,12 @@ async function otherEDD(cpin, eddResponse) {
             currentDate.setDate(date + 1);
         }
      }
+    // const currentDayy = weekday[currentDate.getDay()];
+    //  if(currentDayy == "Fri"){
+    //      total += 1;
+    //         date = currentDate.getDate();
+    //         currentDate.setDate(date + 1);
+    //  }
         eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : " "}`, "deliveryDay": `${(total) === 0 ? "9 PM, Today" : (total) === 1 ? "9 PM, Tomorrow" : weekday[currentDate.getDay()]}`, "imageLike": `${utils.getImageLink(total)}` };
         console.log('yayyyy done other');
         console.log(eddResponse);
