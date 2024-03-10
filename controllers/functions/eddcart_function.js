@@ -58,8 +58,12 @@ async function EddMaincart(cpin, skus, qty) {
                 'WN-MBLR0001': { group: [], wt: 0 },
                 'WN-MDEL0002': { group: [], wt: 0 },
                 'WN-MBHI0003': { group: [], wt: 0 },
+                'WHBLRDSBTM': { group: [], wt: 0 },
                 'WN-DRKOL01': { group: [], wt: 0 },
                 'PWH001': { group: [], wt: 0 },
+                'BLRDSKN1': { group: [], wt: 0 },
+                'WHDSDEL01': { group: [], wt: 0 },
+                'WN-BLR-0002': { group: [], wt: 0 },
                 'PWH002': { group: [], wt: 0 },
                 'WH004': { group: [], wt: 0 },
                 'WH005': { group: [], wt: 0 },
@@ -152,6 +156,7 @@ async function EddMaincart(cpin, skus, qty) {
                     element = {...element, "combinedWt":shipsyWeight};
                     console.log("shipsyWeight");
                     console.log(shipsyWeight,element);
+                    console.log(shipsyWarehouse);
                     whGroups[`${shipsyWarehouse}`].group = [...whGroups[`${shipsyWarehouse}`].group,element];
                     whGroups[`${shipsyWarehouse}`].wt = shipsyWeight;
                     // const b = await otherEDD.otherEDD(shipsyItems[i].cpin, element);

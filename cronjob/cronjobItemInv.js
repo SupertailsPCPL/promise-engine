@@ -171,7 +171,7 @@ async function runInventorySnapshotForWarehouses() {
   try {
     // Fetch the access token from UniCommerce API
     const accessToken = await getAccessToken();
-
+console.log(accessToken);
     if (!accessToken) {
       console.error('Access token not available. Exiting inventory snapshot process.');
       return false;
@@ -192,7 +192,9 @@ async function runInventorySnapshotForWarehouses() {
 }
 
 // // List of warehouses for inventory snapshot process
-const warehouses = ['WN-MBHI0003','WN-MBLR0001','WN-MDEL0002','WHHYD001','PWH001','PWH002','WH004','WH005','WH006','WH007','WH008','WH009','WH010','WH011','WH012','WH013','WH014','WH015','WH016','WH017','WH018','WH019','WH020','WH021','WH022','WH023','WH024','WH025']
+const warehouses = ['WHDSDEL01','WHBLRDSBTM','CWH-BLR001','WN-MBHI0003','WN-MBLR0001','WN-MDEL0002','WHHYD001','PWH001','PWH002','BLRDSKN1','WH004','WH005','WH006','WH007','WH008','WH009','WH010','WH011','WH012','WH013','WH014','WH015','WH016','WH017','WH018','WH019','WH020','WH021','WH022','WH023','WH024','WH025',"WN-BLR-0002"]
 // List of warehouses for inventory snapshot process
-// const warehouses=["WN-DRKOL01"]
-  module.exports = runInventorySnapshotForWarehouses;;
+// const warehouses=["WHBLRDSBTM"]
+  module.exports = runInventorySnapshotForWarehouses;
+
+  // runInventorySnapshotForWarehouses()

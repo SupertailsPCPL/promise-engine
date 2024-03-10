@@ -6,7 +6,6 @@ const getCutOff = require('../CutOff/cutoOff.js');
 const getcPinData = require('../Cpindata/cpindata')
 const utils = require("../Util/utils")
 const otherEDD = require("../Othercouriers/othercourier.js");
-const { cp } = require('fs');
 
 
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -151,47 +150,14 @@ async function shipsyEDD(cpin, eddResponse, shipsy, LDB, enable2HourDelivery) {
     console.log(parseInt(SBD), parseInt(DBD), parseInt(GBD), parseInt(EDD), parseInt(SDDLBD) ?? 0);
     let getByDate = "9 PM";
     let is2HourDelivery = false;
-    if (eddResponse.warehouse == "PWH002" ) {
-       let valid_postal_codes = [
-            '560001', '560002', '560004', '560005', '560007', '560008', '560009', '560051',
-            '560052', '560053', '560011', '560016', '560017', '560066', '560069', '560071',
-            '560075', '560084', '560087', '560093', '560025', '560027', '560029', '560030',
-            '560095', '560102', '560103', '560033', '560034', '560035', '560036', '560037',
-            '560038', '560041', '560042', '560043', '560047', '560048'
-        ]
-        if(valid_postal_codes.includes(cpin)){
-            var currentHour = currentDate.getHours();
-            total = total;
-            if (currentHour >= 8 && currentHour < 10) {
-                getByDate = "12 PM";
-                is2HourDelivery = true;
-            } else if (currentHour >= 10 && currentHour < 12) {
-                getByDate = "2 PM";
-                is2HourDelivery = true;
-            } else if (currentHour >= 12 && currentHour < 14) {
-                getByDate = "4 PM";
-                is2HourDelivery = true;
-            } else if (currentHour >= 14 && currentHour < 16) {
-                getByDate = "6 PM";
-                is2HourDelivery = true;
-            } else if (currentHour >= 16 && currentHour < 18) {
-                getByDate = "8 PM";
-                is2HourDelivery = true;
-            }
-            else if (currentHour >= 18 && currentHour < 24) {
-                getByDate = "9 PM";
-                total += 1;
-                is2HourDelivery = false;
-            }
-            else {
-                getByDate = "9 PM"
-            }
-        }
-    }
-    else 
-    if (eddResponse.warehouse == "CWH-BLR001" ) {
+    let is120Min = false;
+    if (enable2HourDelivery == "SLOTTED") {
+        console.log("enable2HourDelivery");
+        console.log(cpin,enable2HourDelivery);
         var currentHour = currentDate.getHours();
         total = total;
+        let rollingEndTime = eddResponse[`2HourDelivery-${eddResponse.warehouse}-end-time`]?.split(':')[0] ?? 18;
+
         if (currentHour >= 8 && currentHour < 10) {
             getByDate = "12 PM";
             is2HourDelivery = true;
@@ -204,11 +170,11 @@ async function shipsyEDD(cpin, eddResponse, shipsy, LDB, enable2HourDelivery) {
         } else if (currentHour >= 14 && currentHour < 16) {
             getByDate = "6 PM";
             is2HourDelivery = true;
-        } else if (currentHour >= 16 && currentHour < 18) {
+        } else if (currentHour >= 16 && currentHour <  rollingEndTime) {
             getByDate = "8 PM";
             is2HourDelivery = true;
         }
-        else if (currentHour >= 18 && currentHour < 24) {
+        else if (currentHour >= rollingEndTime && currentHour < 24) {
             getByDate = "9 PM";
             total += 1;
             is2HourDelivery = false;
@@ -216,7 +182,41 @@ async function shipsyEDD(cpin, eddResponse, shipsy, LDB, enable2HourDelivery) {
         else {
             getByDate = "9 PM"
         }
-    } else {
+    } 
+    else if (enable2HourDelivery == "ROLLING") {
+        console.log("enable2HourDelivery");
+        console.log(cpin,enable2HourDelivery);
+        var currentHour = currentDate.getHours();
+        var currentMinute = currentDate.getMinutes();
+        total = total;
+        let rollingStartTime = eddResponse[`2HourDelivery-${eddResponse.warehouse}-start-time`]?.split(':')[0] ?? 8;
+        // let rollingStartTimeMinute = eddResponse[`2HourDelivery-${eddResponse.warehouse}-start-time`]?.split(':')[1] ?? 0;
+        let rollingEndTime = eddResponse[`2HourDelivery-${eddResponse.warehouse}-end-time`]?.split(':')[0] ?? 17;
+        // let rollingEndTimeMinute = eddResponse[`2HourDelivery-${eddResponse.warehouse}-end-time`]?.split(':')[1] ?? 0;
+        // console.log(currentHour,"currentHour");
+        // console.log(currentMinute,"currentMinute");
+        // console.log(rollingStartTime,"rollingStartTime");
+        // console.log(rollingStartTimeMinute,"rollingStartTimeMinute");
+        // console.log(rollingEndTime,"rollingEndTime");
+        // console.log(rollingEndTimeMinute,"rollingEndTimeMinute");
+        // console.log(currentHour >= rollingStartTime);
+        if (currentHour >= rollingStartTime && currentHour < rollingEndTime) {
+            let timeChnange = currentHour+2;
+            getByDate = `${convertTo12Hour(currentMinute >0 ? timeChnange+1 : timeChnange)} ${(currentMinute >0 ? timeChnange+1 : timeChnange) >= 12 ? "PM" : "AM"}`;
+            is2HourDelivery = true;
+            is120Min = true;
+        }
+        else if (currentHour >= rollingEndTime && currentHour < 24) {
+            getByDate = "3 PM";
+            total += 1;
+        }
+        else {
+            getByDate = "3 PM"
+        }
+        console.log(getByDate);
+    } 
+    else 
+    {
         if (cutoff > currentDate) {
             total = total;
         }
@@ -246,9 +246,30 @@ async function shipsyEDD(cpin, eddResponse, shipsy, LDB, enable2HourDelivery) {
     //        date = currentDate.getDate();
     //        currentDate.setDate(date + 1);
     // }
-
     eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : " "}`, "deliveryDay": `${(total) === 0 ? `${getByDate}, Today` : (total) === 1 ? `${getByDate}, Tomorrow` : weekday[currentDate.getDay()]}`, "FLEDD": 0, "LLEDD": 0, "courier": "shipsy", "is2HourDelivery": is2HourDelivery, "imageLike": `${utils.getImageLink(total)}` };
+    // let message = `delivery ${is120Min ? 'in':'by'} ${is120Min ? '120 mins': eddResponse?.deliveryDay }${eddResponse?.deliveryDate?.trim()?.length>0?", ":""}${eddResponse?.deliveryDate?.trim()}`
+    let message = `${is120Min ? 'in':'by'} ${is120Min ? '120 mins': eddResponse?.deliveryDay }${eddResponse?.deliveryDate?.trim()?.length>0?", ":""}${eddResponse?.deliveryDate?.trim()}`
+    let AppMessage = `${is120Min ? '120 mins': eddResponse?.deliveryDay }${eddResponse?.deliveryDate?.trim()?.length>0?", ":""}${eddResponse?.deliveryDate?.trim()}`
+    let AppMessageAdverb = `${is120Min ? 'in':'by'}`
+    eddResponse = { ...eddResponse,"message":message,"appMessage":AppMessage,"appMessageAdverb":AppMessageAdverb}
     console.log('yayyyy done');
     console.log(eddResponse);
     return eddResponse;
 }
+
+
+function convertTo12Hour(hour) {
+    if (hour >= 13 && hour <= 23) {
+        return hour - 12;
+    } else if (hour === 0) {
+        return 12;
+    } else {
+        return hour;
+    }
+}
+
+//  pm  fixed
+//  delery time  
+//  by 2pm 
+
+//  superfast debuggerelivery in 120 mins

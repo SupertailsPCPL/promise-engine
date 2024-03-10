@@ -42,7 +42,10 @@ router.get("/edd", async (req, res, next) => {
         warehouse:item.warehouse,
         state:item.state,
         city:item.city,
-        is2HourDelivery:item?.is2HourDelivery ?? false
+        is2HourDelivery:item?.is2HourDelivery ?? false,
+        message:item?.message,
+        appMessageAdverb:item?.appMessageAdverb,
+        appMessage:item?.appMessage
       }));
     }
     return res.send(response);
@@ -83,7 +86,10 @@ router.get("/edd", async (req, res, next) => {
         warehouse:item.warehouse,
         state:item.state,
         city:item.city,
-        is2HourDelivery:item?.is2HourDelivery ?? false
+        is2HourDelivery:item?.is2HourDelivery ?? false,
+        message:item?.message,
+        appMessageAdverb:item?.appMessageAdverb,
+        appMessage:item?.appMessage
       }));
     }
     return res.send(response);

@@ -317,7 +317,12 @@ async function otherEDD(cpin, eddResponse) {
     //         date = currentDate.getDate();
     //         currentDate.setDate(date + 1);
     //  }
-        eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : " "}`, "deliveryDay": `${(total) === 0 ? "9 PM, Today" : (total) === 1 ? "9 PM, Tomorrow" : weekday[currentDate.getDay()]}`, "imageLike": `${utils.getImageLink(total)}` };
+    
+    eddResponse = { ...eddResponse, "responseCode": "200", "dayCount": `${total}`, "deliveryDate": `${total > 1 ? (utils.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()]) : " "}`, "deliveryDay": `${(total) === 0 ? "9 PM, Today" : (total) === 1 ? "9 PM, Tomorrow" : weekday[currentDate.getDay()]}`, "imageLike": `${utils.getImageLink(total)}` };
+    let message = `${total > 1 ? "":"by" } ${eddResponse?.deliveryDay}${eddResponse?.deliveryDate?.trim()?.length>0?", ":""}${eddResponse?.deliveryDate}`
+    let AppMessageAdverb = "by"
+    let AppMessage = `${eddResponse?.deliveryDay}${eddResponse?.deliveryDate?.trim()?.length>0?", ":""}${eddResponse?.deliveryDate}`
+    eddResponse = {...eddResponse,message:message,"appMessage":AppMessage,"appMessageAdverb":AppMessageAdverb}
         console.log('yayyyy done other');
         console.log(eddResponse);
         return eddResponse;
