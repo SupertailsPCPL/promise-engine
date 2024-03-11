@@ -50,7 +50,7 @@ async function getWareHousePriority(state) {
     let promise = new Promise((resolve, reject) => {
         try {
             promiseEngineConnection.query(
-                `SELECT * FROM EDDwarehouse_priority1 WHERE state = ?`, state,
+                `SELECT * FROM EDDwarehouse_priority WHERE state = ?`, state,
                 async function (error, WarehousePriorityresults, fields) {
                     if (error) { console.error(error); }
                     if (WarehousePriorityresults.length) {
