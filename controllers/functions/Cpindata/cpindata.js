@@ -10,7 +10,7 @@ async function getcPinData(cPin) {
                 async function (error, cpinDataresults, fields) {
                     if (error) { console.error(error); }
                     if (cpinDataresults.length) {
-                        console.log('cpinData');
+                        // console.log('cpinData');
                         
                         resolve(JSON.parse(JSON.stringify(cpinDataresults))[0]);
                     } else {

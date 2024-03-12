@@ -32,11 +32,11 @@ async function EddMaincart(cpin, skus, qty) {
             })
         }
         let skuArray = skus.split(',');
-        console.log("skuArray");
-        console.log(skuArray);
-        console.log(qty);
+        // console.log("skuArray");
+        // console.log(skuArray);
+        // console.log(qty);
         let qtyArray = qty.toString().split(',');
-        console.log(qtyArray);
+        // console.log(qtyArray);
 
 
         if (skuArray.length !== qtyArray.length) {
@@ -91,35 +91,35 @@ async function EddMaincart(cpin, skus, qty) {
                 'WH025': { group: [], wt: 0 }
             };
 
-            console.log("before");
+            // console.log("before");
 
             const value = await Promise.all(skuArray.map(
                 (skuId, index) => getEdd(cpin, skuId, qtyArray[index]))).then((values) => {
                     return (values);
                 });
 
-            console.log(value);
-            console.log("loggggggggggggggggg");
+            // console.log(value);
+            // console.log("loggggggggggggggggg");
 
             for (let i = 0; i < value.length; i++) {
                 const a = value[i];
-                console.log(a);
+                // console.log(a);
 
                 if (a.hasOwnProperty('courier')) {
                     if (a.courier === "shipsy" && a.warehouse == "CWH-BLR001") {
                         final.push(a);
                     } else if (a.courier === "shipsy") {
-                        console.log("shippppp");
+                        // console.log("shippppp");
                         shipsyItems.push(a);
                         shipsyWarehouse = a.warehouse;
                         shipsyWeight += a.skuWt;
-                    } 
+                    }
                     else if (a.courier === "NDD") {
-                        console.log("NDD");
+                        // console.log("NDD");
                         NDDItems.push(a);
                         NDDItemsWarehouse = a.warehouse;
                         NDDItemsWeight += a.skuWt;
-                    } 
+                    }
                     else {
                         const warehouseInfo = whGroups[a.warehouse];
                         if (warehouseInfo) {
@@ -130,34 +130,34 @@ async function EddMaincart(cpin, skus, qty) {
                         }
                     }
                 } else {
-                    console.log("courrrrr");
+                    // console.log("courrrrr");
                     final.push(a);
                 }
             }
 
-            console.log(final);
-            console.log('ooooooo');
-            console.log(whGroups);
-            console.log("shipsyWeight");
-            console.log(shipsyWeight);
-            console.log(shipsyWarehouse);
+            // console.log(final);
+            // console.log('ooooooo');
+            // console.log(whGroups);
+            // console.log("shipsyWeight");
+            // console.log(shipsyWeight);
+            // console.log(shipsyWarehouse);
             if (shipsyWeight !== 0 && shipsyWeight > 20) {
                 // let group = whGroups[shipsyWarehouse].group;
                 // let wtKey = shipsyWeight;
                 // console.log("Non Shipsy")
                 // console.log(group);   
                 for (let i = 0; i < shipsyItems.length; i++) {
-                    console.log("haaa"); 
+                    // console.log("haaa");
                     let element = shipsyItems[i];
                     // console.log(element);
                     element.courier = "others";
-                    console.log("element");
-                    console.log(element);
-                    element = {...element, "combinedWt":shipsyWeight};
-                    console.log("shipsyWeight");
-                    console.log(shipsyWeight,element);
-                    console.log(shipsyWarehouse);
-                    whGroups[`${shipsyWarehouse}`].group = [...whGroups[`${shipsyWarehouse}`].group,element];
+                    // console.log("element");
+                    // console.log(element);
+                    element = { ...element, "combinedWt": shipsyWeight };
+                    // console.log("shipsyWeight");
+                    // console.log(shipsyWeight, element);
+                    // console.log(shipsyWarehouse);
+                    whGroups[`${shipsyWarehouse}`].group = [...whGroups[`${shipsyWarehouse}`].group, element];
                     whGroups[`${shipsyWarehouse}`].wt = shipsyWeight;
                     // const b = await otherEDD.otherEDD(shipsyItems[i].cpin, element);
                     // element = {...element, "combinedWt":shipsyWeight};
@@ -167,7 +167,7 @@ async function EddMaincart(cpin, skus, qty) {
             else {
                 for (let i = 0; i < shipsyItems.length; i++) {
                     let element = shipsyItems[i];
-                    element = {...element, "combinedWt":shipsyWeight}
+                    element = { ...element, "combinedWt": shipsyWeight }
                     final.push(element);
                 }
             }
@@ -177,16 +177,16 @@ async function EddMaincart(cpin, skus, qty) {
                 // console.log("Non Shipsy")
                 // console.log(group);   
                 for (let i = 0; i < NDDItems.length; i++) {
-                    console.log("haaa"); 
+                    // console.log("haaa");
                     let element = NDDItems[i];
                     // console.log(element);
                     element.courier = "others";
-                    console.log("element");
-                    console.log(element);
-                    element = {...element, "combinedWt":NDDItemsWeight};
-                    console.log("NDDItemsWeight");
-                    console.log(NDDItemsWeight,element);
-                    whGroups[`${NDDItemsWarehouse}`].group = [...whGroups[`${NDDItemsWarehouse}`].group,element];
+                    // console.log("element");
+                    // console.log(element);
+                    element = { ...element, "combinedWt": NDDItemsWeight };
+                    // console.log("NDDItemsWeight");
+                    // console.log(NDDItemsWeight, element);
+                    whGroups[`${NDDItemsWarehouse}`].group = [...whGroups[`${NDDItemsWarehouse}`].group, element];
                     whGroups[`${NDDItemsWarehouse}`].wt = NDDItemsWeight;
                     // const b = await otherEDD.otherEDD(NDDItems[i].cpin, element);
                     // element = {...element, "combinedWt":NDDItemsWeight};
@@ -196,10 +196,11 @@ async function EddMaincart(cpin, skus, qty) {
             else {
                 for (let i = 0; i < NDDItems.length; i++) {
                     let element = NDDItems[i];
-                    element = {...element, "combinedWt":NDDItemsWeight}
+                    element = { ...element, "combinedWt": NDDItemsWeight }
                     final.push(element);
                 }
             }
+            
             for (const warehouseId in whGroups) {
                 const group = whGroups[warehouseId].group;
                 for (let i = 0; i < group.length; i++) {
@@ -208,57 +209,71 @@ async function EddMaincart(cpin, skus, qty) {
                     // currentDate.setMinutes(currentDate.getMinutes());
                     currentDate.setHours(currentDate.getHours() + 5);
                     currentDate.setMinutes(currentDate.getMinutes() + 30);
+                    let deliveryTime = new Date();;
+                    deliveryTime.setHours(currentDate.getHours() + 5);
+                    deliveryTime.setMinutes(currentDate.getMinutes() + 30);
+                    deliveryTime.setMilliseconds(0)
+                    deliveryTime.setSeconds(0)
                     let wh = group[i].warehouse;
+                    // console.log("whGroups[warehouseId].wt,warehouseId");
+                    // console.log(whGroups[warehouseId].wt,warehouseId);
                     const courierData = await otherEDD.getCourier(group[i].cpin, whGroups[warehouseId].wt); // group[i].warehouse not required
-                    let daycount = parseInt(courierData[`${wh}`]) + parseInt(group[i].SBD) + parseInt(group[i].DBD);
+                    // console.log(courierData[`${wh}`]);
+                    let daycount = parseInt(courierData[`${wh}`]) + parseInt(group[i].SBD) + parseInt(group[i].DBD);                  
                     group[i].EDD = parseInt(courierData[`${wh}`]);
-                    console.log("EDD Daataa");
-                    console.log(group[i].SBD);
-                    console.log(courierData[`${wh}`]); 
-                    console.log("day count");
-                    console.log(daycount);
+                    // console.log("EDD Daataa");
+                    // console.log(group[i].SBD);
+                    // console.log(courierData[`${wh}`]);
+                    // console.log("day count");
+                    // console.log(daycount);
                     //parseInt(courierData.EDD)
                     let cutOffData = await getCutOff();
-                    console.log("cutoff");
-                    console.log(cutOffData);
-                    console.log(group[i].warehouse);
+                    // console.log("cutoff");
+                    // console.log(cutOffData);
+                    // console.log(group[i].warehouse);
 
-                    let cutOffTime ;
+                    let cutOffTime;
                     if (group[i].courier == "others") {
-                         cutOffTime = cutOffData[`others-${group[i].warehouse}`]?.split(':') ?? [13,0];
+                        cutOffTime = cutOffData[`others-${group[i].warehouse}`]?.split(':') ?? [13, 0];
                     }
-                    else{
-                        cutOffTime = cutOffData[`ndd-${group[i].warehouse}`]?.split(':') ?? [13,0];
+                    else {
+                        cutOffTime = cutOffData[`ndd-${group[i].warehouse}`]?.split(':') ?? [13, 0];
                     }
-                    console.log("cutOffTime",cutOffTime);
+                    // console.log("cutOffTime", cutOffTime);
                     let cuttOfHour = parseInt(cutOffTime[0]);
                     let cuttOfMin = parseInt(cutOffTime[1]);
-                    console.log("cuttOfHour",cuttOfHour,"cuttOfMin",cuttOfMin);
+                    // console.log("cuttOfHour", cuttOfHour, "cuttOfMin", cuttOfMin);
                     var cutoff = new Date();
                     cutoff.setDate(currentDate.getDate());
-                    cutoff.setHours(cuttOfHour);    
+                    cutoff.setHours(cuttOfHour);
                     cutoff.setMinutes(cuttOfMin)
                     cutoff.setSeconds(0);
-                    console.log("final cutt of time",cutoff);
+                    // console.log("final cutt of time", cutoff);
                     if (cutoff > currentDate) {
                         daycount = daycount;
                     }
-                    else{
-                        daycount +=1;
+                    else {
+                        daycount += 1;
                     }
-
+                    deliveryTime.setDate(deliveryTime.getDate() + daycount);
+                    deliveryTime.setHours(21);
+                    deliveryTime.setMinutes(0);  
+                    group[i].deliveryTime = deliveryTime;
                     group[i].dayCount = daycount;
                     group[i].combinedWt = whGroups[warehouseId].wt;
                     const date = currentDate.getDate();
                     currentDate.setDate(date + daycount);
                     group[i].deliveryDate = `${daycount > 1 ? util.getDateFormated(currentDate.getDate()) + " " + monthNames[currentDate.getMonth()] : " "}`;
                     group[i].deliveryDay = `${(daycount) === 0 ? "9 PM, Today" : (daycount) === 1 ? "9 PM, Tomorrow" : weekday[currentDate.getDay()]}`;
+                    group[i].message = `${group[i].deliveryDay + (group[i].deliveryDate?.length>0 ? " ":"") + group[i].deliveryDate}`
+                    group[i].appMessage = `${group[i].deliveryDay + (group[i].deliveryDate?.length>0 ? " ":"") + group[i].deliveryDate}`
+                    group[i].appMessageAdverb = 'by';
                     final.push(group[i]);
 
                 }
             }
-            console.log("final");
-            console.log(final);
+            // console.log("final");
+            // console.log(final);
             return final;
         }
     }
@@ -281,7 +296,7 @@ async function getEdd(cpin, skuId, qty) {
             let eddResponse;
             eddResponse = { ...eddResponse, "cpin": cpin, "skuId": skuId, "qty": qty };
             let inventoryDetails = await GetInventory(eddResponse.skuId);
-            console.log("sad kadks ka kakk skasdk");
+            // console.log("sad kadks ka kakk skasdk");
             if (inventoryDetails) {
                 eddResponse = {
                     ...eddResponse,
@@ -291,7 +306,7 @@ async function getEdd(cpin, skuId, qty) {
 
             }
             else {
-                resolve ({
+                resolve({
                     "skuid": skuId,
                     "responseCode": "402",
                     "errorDiscription": "Product Not Found",
@@ -302,31 +317,31 @@ async function getEdd(cpin, skuId, qty) {
             let shipsy = await Shipsy.getIsAvailableInShipcity(cpin);
 
             if (shipsy !== false) {
-                console.log("going with shipsy ");
-                 let b ;
+                // console.log("going with shipsy ");
+                let b;
                 for (let i = 0; i < shipsy.length; i++) {
-                    const element = shipsy[i];   
-                    console.log("elementelement",element);
-                         b = await Shipsy.shipsyEDD(cpin, eddResponse, element.shipsyCity,element?.LBD,element?.is2HourDelivery);
-                         if(b){
-                            // console.log("daldldladldlal",b);
-                             break;
-                         }
+                    const element = shipsy[i];
+                    // console.log("elementelement", element);
+                    b = await Shipsy.shipsyEDD(cpin, eddResponse, element.shipsyCity, element?.LBD, element?.is2HourDelivery, element?.deliveryMins ?? 120);
+                    if (b) {
+                        // console.log("daldldladldlal",b);
+                        break;
+                    }
                 }
-                console.log("final respomseeeee");
-                console.log(b);
-                if(b){
+                // console.log("final respomseeeee");
+                // console.log(b);
+                if (b) {
                     // console.log("dajskdkdasadsdasooso");
                     resolve(b);
                 }
-            else {
-                console.log("going with other courier ");
-                console.log(eddResponse)
-                const b = await otherEDD.otherEDD(cpin, eddResponse);
-                resolve(b);
+                else {
+                    // console.log("going with other courier ");
+                    // console.log(eddResponse)
+                    const b = await otherEDD.otherEDD(cpin, eddResponse);
+                    resolve(b);
+                }
             }
-        }
-           else{
+            else {
                 const b = await otherEDD.otherEDD(cpin, eddResponse);
                 resolve(b);
             }

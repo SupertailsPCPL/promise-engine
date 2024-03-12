@@ -13,8 +13,8 @@ async function getAccessToken() {
         resolve(null);
       } else {
         try {
-          console.log(" asddsa sadasdsaads");        
-          console.log(body);
+          // console.log(" asddsa sadasdsaads");        
+          // console.log(body);
           const data = JSON.parse(body);
           if (data && data.access_token) {
             resolve(data.access_token);
@@ -59,7 +59,7 @@ async function createExportJob(accessToken) {
         "frequency": "ONETIME"
       })
     };
-    console.log(options.body);
+    // console.log(options.body);
     // Making a POST request to the UniCommerce API to fetch inventory data
     const response = await new Promise((resolve, reject) => {
       request(options, function (error, response, body) {
@@ -68,8 +68,8 @@ async function createExportJob(accessToken) {
           resolve(false);
         } else {
           try {
-            console.log("createExportJob createExportJob createExportJob");
-            console.log(JSON.parse(body));
+            // console.log("createExportJob createExportJob createExportJob");
+            // console.log(JSON.parse(body));
             const responseBody = JSON.parse(body);
             resolve(responseBody.jobCode);
           } catch (parseError) {
@@ -123,7 +123,7 @@ async function checkExportJobStatus(accessToken, jobCode) {
 
 // Function to convert CSV to JSON
 async function convertCsvToJson(csvFileUrl) {
-  console.log("entered convertCsvToJson");
+  // console.log("entered convertCsvToJson");
   try {
     request(csvFileUrl, (error, response, body) => {
       if (error) {
@@ -170,11 +170,11 @@ async function convertCsvToJson(csvFileUrl) {
             return result;
           }, []);
 
-          console.log(consolidatedData);
+          // console.log(consolidatedData);
 
           // Perform bulk insert for faster database insert
           await bulkInsertToTable(consolidatedData);
-          console.log('All data inserted successfully');
+          // console.log('All data inserted successfully');
           return true
         })
           .catch((error) => {
@@ -192,7 +192,7 @@ async function pollJobCompletion(accessToken, jobCode) {
   try {
     const responseBody = await checkExportJobStatus(accessToken, jobCode);
     if (responseBody.status === "COMPLETE") {
-      console.log(JSON.stringify(responseBody, null, 2));
+      // console.log(JSON.stringify(responseBody, null, 2));
       
       // After job completion, call convertCsvToJson with the filePath
       await convertCsvToJson(responseBody.filePath);
@@ -211,8 +211,8 @@ async function ItemMasterCronjob(skuId) {
   try {
     const accessToken = await getAccessToken();
     if (accessToken) {
-      console.log("accessToken");
-      console.log(accessToken);
+      // console.log("accessToken");
+      // console.log(accessToken);
       const jobCode = await createExportJob(accessToken);
       await pollJobCompletion(accessToken, jobCode);
       return "completed"

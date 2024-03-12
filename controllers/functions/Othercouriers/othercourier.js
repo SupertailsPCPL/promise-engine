@@ -26,7 +26,7 @@ async function getCourier(cpin, skuWt) {
                     if (error) { console.error(error); }
                     if (courierresults) {
                         // console.log('8-T6666 courier');
-                        console.log(courierresults[0]);
+                        // console.log(courierresults[0]);
                         resolve(JSON.parse(JSON.stringify(courierresults))[0]);
                     } else {
                         // console.log('-8-T6-courier Not Found');
@@ -83,17 +83,17 @@ async function otherEDD(cpin, eddResponse) {
     let GBD = 0;
     let skuWt = eddResponse.skuWt;
     // eddResponse.skuWt = skuWt;
-    console.log("DBD data");
-    console.log(Date());
+    // console.log("DBD data");
+    // console.log(Date());
     DBD = await getDBD(cpin);
-    console.log("DBD data completed");
-    console.log(Date());
+    // console.log("DBD data completed");
+    // console.log(Date());
     eddResponse = { ...eddResponse, "DBD": `${DBD}` };
-    console.log("Cpin data");
-    console.log(Date());
+    // console.log("Cpin data");
+    // console.log(Date());
     var cpinData = await getcPinData(cpin);
-    console.log("Cpin data completed");
-    console.log(Date());
+    // console.log("Cpin data completed");
+    // console.log(Date());
     if (cpinData === false) {
         return ({
             "skuid": eddResponse[`${eddResponse.skuId}`],
@@ -106,16 +106,16 @@ async function otherEDD(cpin, eddResponse) {
     state = cpinData.stateFullName;
     city = cpinData.city;
     eddResponse = { ...eddResponse, "state": `${state.toUpperCase()}`, "city": `${city.toUpperCase()}`, "GBD": `${GBD}` };
-    console.log("eddResponse post dbd gbd and cpin data");
-    console.log("hghgghhgghg");
-    console.log("state");
-    console.log(userState);
-    console.log("warehouse priority");
-    console.log(Date());
+    // console.log("eddResponse post dbd gbd and cpin data");
+    // console.log("hghgghhgghg");
+    // console.log("state");
+    // console.log(userState);
+    // console.log("warehouse priority");
+    // console.log(Date());
     const wareHousePriorityData = await getWareHousePriority(userState);
-    console.log("warehouse priority completed");
-    console.log(Date());
-    console.log(wareHousePriorityData);
+    // console.log("warehouse priority completed");
+    // console.log(Date());
+    // console.log(wareHousePriorityData);
     if (wareHousePriorityData == false) {
         return ({
             "skuId": eddResponse.skuid,
@@ -124,36 +124,36 @@ async function otherEDD(cpin, eddResponse) {
             "error": "No WareHouse Priority Found For this CPin"
         })
     }
-    console.log("testing");
+    // console.log("testing");
     const warehousePriorities = [
         "WHP1", "WHP2", "WHP3", "WHP4", "WHP5", "WHP6", "WHP7", "WHP8", "WHP9", "WHP10", "WHP11", "WHP12", "WHP13", "WHP14", "WHP15", "WHP16", "WHP17", "WHP18", "WHP19", "WHP20","WHP21","WHP22","WHP23","WHP24","WHP25","WHP26","WHP27"
     ];
     let eddqty = eddResponse.qty;
-    console.log(eddResponse);
-    console.log(eddqty);
+    // console.log(eddResponse);
+    // console.log(eddqty);
     let whareHouseId;
 
-    console.log("wareHousePriorityData",wareHousePriorityData);
+    // console.log("wareHousePriorityData",wareHousePriorityData);
     for (const warehousePriority of warehousePriorities) {
         let warehouseId = wareHousePriorityData[`${warehousePriority}`];
-        console.log(warehousePriority,warehouseId);
+        // console.log(warehousePriority,warehouseId);
         if (eddResponse[`${warehouseId}`] === null || eddResponse[`${warehouseId}`] === 0,!eddResponse[`${warehouseId}`]) {
-            console.log(warehouseId,"going in null");
+            // console.log(warehouseId,"going in null");
             continue; // Skip to the next warehouse if warehouseId is empty or null
         }
         else if (eddqty <= eddResponse[`${warehouseId}`]) {
             whareHouseId = warehouseId;
             break;
         } else {
-            console.log(warehouseId,"jjbjbj");
-            console.log(eddResponse[`${warehouseId}`],eddqty);
+            // console.log(warehouseId,"jjbjbj");
+            // console.log(eddResponse[`${warehouseId}`],eddqty);
             eddqty = eddqty - parseInt(eddResponse[`${warehouseId}`]??0);
         }
     }
-    console.log("final",whareHouseId);
+    // console.log("final",whareHouseId);
     if (whareHouseId) {
-        console.log("Final whareHouseId");
-        console.log(whareHouseId);
+        // console.log("Final whareHouseId");
+        // console.log(whareHouseId);
     } else {
         return ({
             "skuId": eddResponse.skuId,
@@ -174,22 +174,22 @@ async function otherEDD(cpin, eddResponse) {
         })
     }
     eddResponse.warehouse = whareHouseId;
-    console.log("EDD Warehouse");
-    console.log(eddResponse.warehouse);
-    console.log("SBD Data");
-    console.log(Date());
+    // console.log("EDD Warehouse");
+    // console.log(eddResponse.warehouse);
+    // console.log("SBD Data");
+    // console.log(Date());
     SBD = await getSBD(eddResponse.warehouse);
-    console.log("SBD Data completed");
-    console.log(Date());
+    // console.log("SBD Data completed");
+    // console.log(Date());
     eddResponse = { ...eddResponse, "SBD": `${SBD}` };
 
-    console.log("Courier Data");
-    console.log(Date());
+    // console.log("Courier Data");
+    // console.log(Date());
     // ware and pincode 
-    console.log("wt ads,ds akads ads kl adsldas da");
-    console.log(eddResponse);
+    // console.log("wt ads,ds akads ads kl adsldas da");
+    // console.log(eddResponse);
     if (await getIsAvailableInNDD(cpin) === eddResponse.warehouse && skuWt <= 20) {
-        console.log("Going in NDD");
+        // console.log("Going in NDD");
         EDD = 1;
         eddResponse = { ...eddResponse,courier:"NDD", "EDD": `${EDD}` };
     } else {
@@ -197,13 +197,13 @@ async function otherEDD(cpin, eddResponse) {
         eddResponse = { ...eddResponse, courier:"others" };
 
         const courierData = await getCourier(cpin, skuWt); // eddResponse.warehouse not required for the new table
-        console.log("Going in courier");
-        console.log("Courier Data completed");
-        console.log(Date());
-        console.log(eddResponse.warehouse);
-        console.log(skuWt);
-        console.log("courierData");
-        console.log(courierData);
+        // console.log("Going in courier");
+        // console.log("Courier Data completed");
+        // console.log(Date());
+        // console.log(eddResponse.warehouse);
+        // console.log(skuWt);
+        // console.log("courierData");
+        // console.log(courierData);
         if (courierData == false ) {
             return ({
                 "skuId": eddResponse.skuid,
@@ -214,8 +214,8 @@ async function otherEDD(cpin, eddResponse) {
             );
         } else {
             EDD = courierData[`${whareHouseId}`];
-            console.log("EDD from courier");
-            console.log(EDD);
+            // console.log("EDD from courier");
+            // console.log(EDD);
             //EDD = courierData.EDD;
             eddResponse = { ...eddResponse, "EDD": `${EDD}` };
         }
@@ -225,23 +225,27 @@ async function otherEDD(cpin, eddResponse) {
 
     }
         var total = parseInt(SBD ?? 0) + parseInt(DBD) + parseInt(GBD) + parseInt(EDD) + parseInt(LBD);
-        console.log("total");
-        console.log(total);
+        // console.log("total");
+        // console.log(total);
 
         var currentDate = new Date();
         // currentDate.setHours(currentDate.getHours());
         // currentDate.setMinutes(currentDate.getMinutes());
         currentDate.setHours(currentDate.getHours() + 5);
         currentDate.setMinutes(currentDate.getMinutes() + 30);
-
+        let deliveryTime= new Date();;
+        deliveryTime.setHours(currentDate.getHours() + 5);
+        deliveryTime.setMinutes(currentDate.getMinutes() + 30);
+        deliveryTime.setMilliseconds(0)
+        deliveryTime.setSeconds(0)
         let cutOffData = await getCutOff();
-        console.log("cutoff");
-        console.log(cutOffData);
-        console.log(eddResponse.warehouse);
+        // console.log("cutoff");
+        // console.log(cutOffData);
+        // console.log(eddResponse.warehouse);
         let NDDLBD=0
         let cutOffTime ;
         if (eddResponse.courier == "others") {
-            console.log(cutOffData);
+            // console.log(cutOffData);
              cutOffTime = cutOffData[`others-${eddResponse.warehouse}`]?.split(':') ?? [12,0];
             }
         else{
@@ -249,10 +253,10 @@ async function otherEDD(cpin, eddResponse) {
             cutOffTime = cutOffData[`ndd-${eddResponse.warehouse}`]?.split(':') ?? [13,0];
             NDDLBD = cutOffData[`ndd-${eddResponse.warehouse}-bufferdays`] ?? 0;
         }
-        console.log("cutOffTime",cutOffTime);
+        // console.log("cutOffTime",cutOffTime);
         let cuttOfHour = parseInt(cutOffTime[0]);
         let cuttOfMin = parseInt(cutOffTime[1]);
-        console.log("cuttOfHour",cuttOfHour,"cuttOfMin",cuttOfMin);
+        // console.log("cuttOfHour",cuttOfHour,"cuttOfMin",cuttOfMin);
         var cutoff = new Date();
         cutoff.setDate(currentDate.getDate());
         cutoff.setHours(cuttOfHour);    
@@ -264,29 +268,32 @@ async function otherEDD(cpin, eddResponse) {
         timeLeftToCuttOff = timeLeftToCuttOff < 0 ? 1440 - Math.abs(timeLeftToCuttOff) : timeLeftToCuttOff;
 
         eddResponse = { ...eddResponse, "currentDate": `${currentDate}`, "cutoff": `${cutoff}`, "timeLeftInMinutes": `${timeLeftToCuttOff}` };
-        console.log("eddResponse post all time events");
+        // console.log("eddResponse post all time events");
 
         if (cutoff > currentDate) {
             total = total;
+            deliveryTime.setHours(21);
+            deliveryTime.setMinutes(0);
+            deliveryTime.setDate(deliveryTime.getDate()+total);
+
         }
         else {
+            deliveryTime.setHours(21);
+            deliveryTime.setMinutes(0);
+            deliveryTime.setDate(deliveryTime.getDate()+1+total);
             total += 1;
         }
 
-        console.log("DASldasldsal dsalads l");
+        // console.log("DASldasldsal dsalads l");
         total= total + NDDLBD;
         date = currentDate.getDate();
         currentDate.setDate(date + total);
-        if(eddResponse.state == "TELANGANA" && currentDate.getDate() == 31){
-            total += 1
-            currentDate.setDate(currentDate + 1);
-        }
         // console.log("currentDate.getDay()");
         // console.log(currentDate.getDate());
         if( eddResponse.courier == "NDD")
      {
-        console.log(eddResponse['ndd-disable-Sunday-Delivery']);
-        console.log("in is adsas Sunday");
+        // console.log(eddResponse['ndd-disable-Sunday-Delivery']);
+        // console.log("in is adsas Sunday");
         //Checking Whether current day is equql to ndd disable day 
         const currentDay = weekday[currentDate.getDay()];
 
@@ -296,12 +303,13 @@ async function otherEDD(cpin, eddResponse) {
         // Check if the current day is in the disabled days
         const isDayDisabled = disabledDays.includes(currentDay);
      if(isDayDisabled){
-        console.log("in is day");
-        console.log("total",total);
+        // console.log("in is day");
+        // console.log("total",total);
         total += 1;
-        console.log("total",total);
+        // console.log("total",total);
         date = currentDate.getDate();
         currentDate.setDate(date + 1);
+        deliveryTime.setDate(deliveryTime.getDate()+1);
      }}
      if(eddResponse.warehouse != "WN-MBHI0003" && eddResponse.warehouse != "WN-MDEL0002" &&eddResponse.warehouse != "WN-MBLR0001"){
         const currentDay = weekday[currentDate.getDay()];
@@ -309,6 +317,7 @@ async function otherEDD(cpin, eddResponse) {
             total += 1;
             date = currentDate.getDate();
             currentDate.setDate(date + 1);
+            deliveryTime.setDate(deliveryTime.getDate()+1);
         }
      }
     // const currentDayy = weekday[currentDate.getDay()];
@@ -322,8 +331,8 @@ async function otherEDD(cpin, eddResponse) {
     let message = `${total > 1 ? "":"by" } ${eddResponse?.deliveryDay}${eddResponse?.deliveryDate?.trim()?.length>0?", ":""}${eddResponse?.deliveryDate}`
     let AppMessageAdverb = "by"
     let AppMessage = `${eddResponse?.deliveryDay}${eddResponse?.deliveryDate?.trim()?.length>0?", ":""}${eddResponse?.deliveryDate}`
-    eddResponse = {...eddResponse,message:message,"appMessage":AppMessage,"appMessageAdverb":AppMessageAdverb}
-        console.log('yayyyy done other');
-        console.log(eddResponse);
+    eddResponse = {...eddResponse,message:message,"appMessage":AppMessage,"appMessageAdverb":AppMessageAdverb,"deliveryTime":deliveryTime}
+        // console.log('yayyyy done other');
+        // console.log(eddResponse);
         return eddResponse;
 }

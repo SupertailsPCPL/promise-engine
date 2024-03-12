@@ -11,12 +11,12 @@ const itemMasterCron  = require("./cronjobItmenMaster.js");
 
 
 router.get("/inventory", async (req, res, next) => {
-  console.log("simple cron started",Date());  
+  // console.log("simple cron started",Date());  
   let funcRes = await simpleInvCron();
-  console.log("simple cron ended",Date());  
-  console.log("bunde cron ended",Date());  
+  // console.log("simple cron ended",Date());  
+  // console.log("bunde cron ended",Date());  
   let bundleInv = await bundleInvCron();
-  console.log("bunde cron ended",Date());  
+  // console.log("bunde cron ended",Date());  
     return res.status(200).json({
       message: "itemInv cronjob successfully completed",
       bundleInv:bundleInv,

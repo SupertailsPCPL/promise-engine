@@ -57,14 +57,14 @@ async function getEdd(cpin, skuId, qty) {
         try {
             let eddResponse;
             eddResponse = { ...eddResponse, "cpin": cpin, "skuId": skuId, "qty": qty };
-            console.log(eddResponse.skuId);
-            console.log("GetInventory");
-            console.log(Date());
+            // console.log(eddResponse.skuId);
+            // console.log("GetInventory");
+            // console.log(Date());
             let inventoryDetails = await GetInventory(eddResponse.skuId);
-            console.log("GetInventory completed");
-            console.log(Date());
-            console.log("aksskakskaa");
-            console.log(inventoryDetails);
+            // console.log("GetInventory completed");
+            // console.log(Date());
+            // console.log("aksskakskaa");
+            // console.log(inventoryDetails);
 
             if (inventoryDetails) {
                 eddResponse = {
@@ -82,37 +82,37 @@ async function getEdd(cpin, skuId, qty) {
                     "error": "SkuId not Found"
                 });
             }
-            console.log("check for shipsy city");
-            console.log(Date());
+            // console.log("check for shipsy city");
+            // console.log(Date());
             let shipsy = await Shipsy.getIsAvailableInShipcity(cpin);
-            console.log("check for shipsy city completed");
-            console.log(Date());
-            // console.log("ds aldasl ldsals laasl s");
-            console.log(shipsy);
+            // console.log("check for shipsy city completed");
+            // console.log(Date());
+            // // console.log("ds aldasl ldsals laasl s");
+            // console.log(shipsy);
 
             // if (shipsy !== false && qty * parseFloat(eddResponse.skuWt) <= 20) {
             if (shipsy !== false) {
-                console.log("going with shipsy ");
+                // console.log("going with shipsy ");
                 let b ;
                 for (let i = 0; i < shipsy.length; i++) {
                     const element = shipsy[i];   
 
-                    console.log("elementelement",element);
-                         b = await Shipsy.shipsyEDD(cpin, eddResponse, element?.shipsyCity,element?.LBD,element?.is2HourDelivery);
+                    // console.log("elementelement",element);
+                         b = await Shipsy.shipsyEDD(cpin, eddResponse, element?.shipsyCity,element?.LBD,element?.is2HourDelivery,element?.deliveryMins ?? 120);
                          if(b){
                             // console.log("daldldladldlal",b);
                              break;
                          }
                 }
-                console.log("final respomseeeee");
-                console.log(b);
+                // console.log("final respomseeeee");
+                // console.log(b);
                 if(b){
                     // console.log("dajskdkdasadsdasooso");
                     resolve(b);
                 }
                 else{
                     // console.log("adskdsakakdadskkdaskadska");
-                    console.log("going with other courier ");
+                    // console.log("going with other courier ");
                     const b = await otherEDD.otherEDD(cpin, eddResponse);
                     resolve(b);
                     

@@ -171,7 +171,7 @@ async function runInventorySnapshotForWarehouses() {
   try {
     // Fetch the access token from UniCommerce API
     const accessToken = await getAccessToken();
-console.log(accessToken);
+// console.log(accessToken);
     if (!accessToken) {
       console.error('Access token not available. Exiting inventory snapshot process.');
       return false;
@@ -183,7 +183,7 @@ console.log(accessToken);
     // promises.push(...warehouseIds.map(warehouseId => processBundleItems(warehouseId, accessToken)));
 
     await Promise.all(promises);
-    console.log("aj doneee");
+    // console.log("aj doneee");
     return true;
   } catch (error) {
     console.error('Error:', error);

@@ -30,7 +30,7 @@ async function GetItemMaster() {
 // Function to process inventory data for bundle SKUs
 async function processBundleItems() {
     try {
-        console.log("IAM INNNN");
+        // console.log("IAM INNNN");
         // Fetch the item master data from the database
         const bundleItemMaster = await GetItemMaster(false);
         const batchSize = 2000;
@@ -49,11 +49,11 @@ async function processBundleItems() {
             }
 
             const invDataArray = await Promise.all(promises);
-            console.log("dasldasladlslasl");
+            // console.log("dasldasladlslasl");
             for (let j = 0; j < batchItems.length; j++) {
                 const bundleItem = batchItems[j];
                 const invData = invDataArray[j];
-                    console.log(bundleItem);
+                    // console.log(bundleItem);
                 if (invData.length > 0) {
                     const componentSkusData = JSON.parse(bundleItem.componentSkusData);
                     const skuIds = componentSkusData.map(item => item.skuid);
@@ -61,7 +61,7 @@ async function processBundleItems() {
                         map[skuData.skuid] = skuData.qty;
                         return map;
                     }, {});
-                    console.log(invData);
+                    // console.log(invData);
 
                     const outputInv = invData.reduce((output, data) => {
                         const skuCode = data.skuCode;
@@ -80,8 +80,8 @@ async function processBundleItems() {
                         return output;
                     }, {});
                     outputInv.skuCode = bundleItem.skuId;
-                    console.log("outputInv");
-                    console.log(outputInv);
+                    // console.log("outputInv");
+                    // console.log(outputInv);
                     await insertOrUpdateInventory(outputInv);
                     // console.log(bundleItem);
                     // console.log("outputInv");
@@ -93,8 +93,8 @@ async function processBundleItems() {
             }
         }
 
-        console.log("IAM OUT");
-        console.log(i);
+        // console.log("IAM OUT");
+        // console.log(i);
         return true;
     } catch (error) {
         console.error('Error:', error);
@@ -103,7 +103,7 @@ async function processBundleItems() {
 
 // Function to get the item master data from the database
 async function GetItemInv(skus) {
-    console.log("daskdasksdak",skus);
+    // console.log("daskdasksdak",skus);
     return new Promise((resolve, reject) => {
         try {
             // Use the connection pool to execute a query to fetch the item master data
@@ -115,7 +115,7 @@ async function GetItemInv(skus) {
                         resolve(false);
                     } else {
                         // Convert the query result to JSON and return it
-                        console.log(true);
+                        // console.log(true);
                         resolve(JSON.parse(JSON.stringify(Logsresults)));
                     }
                 });

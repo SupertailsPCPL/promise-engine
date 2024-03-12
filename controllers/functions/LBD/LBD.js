@@ -14,7 +14,7 @@ async function GetLBD(warehouse,cpin,skuWt) {
                     }
                     if (LBDResults?.length) {
                         dataRes = JSON.parse(JSON.stringify(LBDResults[0]))
-                        console.log(dataRes?.LBD ?? 0);
+                        // console.log(dataRes?.LBD ?? 0);
                         resolve(dataRes?.LBD ?? 0 );
 
                     } else {

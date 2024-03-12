@@ -45,7 +45,8 @@ router.get("/edd", async (req, res, next) => {
         is2HourDelivery:item?.is2HourDelivery ?? false,
         message:item?.message,
         appMessageAdverb:item?.appMessageAdverb,
-        appMessage:item?.appMessage
+        appMessage:item?.appMessage,
+        deliveryTime:item?.deliveryTime ?? false
       }));
     }
     return res.send(response);
@@ -57,7 +58,7 @@ router.get("/edd", async (req, res, next) => {
     let cpin = req?.query?.cpin ?? false;
     let skus = req?.query?.skuid ?? false;
     let qty = req?.query?.qty ?? 1;
-    console.log(cpin,skus,qty);
+    // console.log(cpin,skus,qty);
     let showAll = req?.query?.showAll ?? false;
     let funcRes = await CartEddFunctions.EddMaincart(cpin,skus,qty);
     let response;
@@ -89,8 +90,8 @@ router.get("/edd", async (req, res, next) => {
         is2HourDelivery:item?.is2HourDelivery ?? false,
         message:item?.message,
         appMessageAdverb:item?.appMessageAdverb,
-        appMessage:item?.appMessage
-      }));
+        appMessage:item?.appMessage,
+        deliveryTime:item?.deliveryTime ?? false      }));
     }
     return res.send(response);
 

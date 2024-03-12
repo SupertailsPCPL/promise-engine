@@ -25,14 +25,14 @@ async function GetInventory(skuId) {
                 `SELECT * FROM promiseEngine.EDDItemMaster inner join EdditemInventory on EDDItemMaster.skuId = EdditemInventory.skuCode AND skuId = ?`, skuId,
                 async function (error, EDD_Inventory_Sample, fields) {
                     if (error) { console.error(error); }
-                    console.log('Inventory_rsponse');
-                    console.log(EDD_Inventory_Sample);
+                    // console.log('Inventory_rsponse');
+                    // console.log(EDD_Inventory_Sample);
                     if (EDD_Inventory_Sample?.length) {
                         let data = JSON.parse(JSON.stringify(EDD_Inventory_Sample))[0];
                         data.skuId = sku;
                         resolve(data);
                     } else {
-                        console.log("dasl dakad skasd k");
+                        // console.log("dasl dakad skasd k");
                         resolve(false);
                     }
                 });

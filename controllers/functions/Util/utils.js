@@ -8,7 +8,7 @@ const imageLinks = [
 ]
 
 function getImageLink(total) {
-    console.log("entered img link funcrion");
+    // console.log("entered img link funcrion");
     if (total === 0) {
         return imageLinks[0];
     }
